@@ -179,6 +179,7 @@
     }
 
     .desc { margin: 12px 0 0; color: var(--muted); line-height: 1.55; font-size: 15px; }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.55; }
 
     .filters, .form-grid {
       display: grid;
@@ -332,8 +333,8 @@
     <section class="hero">
       <div>
         <div class="eyebrow">MAPLE PLANET DATA LAB</div>
-        <h1>메이플플래닛<br>데이터랩</h1>
-        <p>사냥터를 감으로 고르지 말고, 기록으로 비교하세요.</p>
+        <h1>사냥터를 감으로<br>고르지 마세요.</h1>
+        <p>메이플플래닛 기준 사냥터 후보를 비교하고, 내 사냥 결과를 기록해서 나한테 맞는 맵을 찾는 데이터랩입니다.</p>
         <div class="hero-actions">
           <a class="button primary" href="#maps">사냥터 비교하기</a>
           <a class="button secondary" href="#lab">내 기록 입력하기</a>
@@ -358,7 +359,7 @@
       <div class="filters">
         <div class="field"><label for="levelFilter">내 레벨</label><input id="levelFilter" inputmode="numeric" placeholder="예: 45"></div>
         <div class="field"><label for="purposeFilter">목적</label><select id="purposeFilter"><option value="all">전체</option><option value="레벨업">레벨업</option><option value="메소">메소</option><option value="드랍">드랍</option><option value="파티">파티</option><option value="퀘스트">퀘스트</option></select></div>
-        <div class="field"><label for="sortFilter">정렬</label><select id="sortFilter"><option value="match">추천순</option><option value="levelAsc">낮은 레벨순</option><option value="levelDesc">높은 레벨순</option><option value="lowFatigue">피로도 낮은순</option><option value="youtube">유튜브 사냥 적합순</option></select></div>
+        <div class="field"><label for="sortFilter">정렬</label><select id="sortFilter"><option value="match">추천순</option><option value="expDesc">경험치 높은순</option><option value="mesoDesc">메소 높은순</option><option value="levelAsc">낮은 레벨순</option><option value="levelDesc">높은 레벨순</option><option value="lowFatigue">피로도 낮은순</option><option value="youtube">유튜브 사냥 적합순</option></select></div>
         <div class="field"><label for="keywordFilter">검색</label><input id="keywordFilter" placeholder="예: 마가티아, 월묘, 파티"></div>
       </div>
 
@@ -442,18 +443,45 @@
       'use strict';
 
       var MAPS = [
-        { id: 'hene-hunt1', min: 8, max: 13, area: '헤네시스', name: '사냥터1', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, note: '초반 구간 후보. 플래닛 기준 8~13 구간에서 언급되는 사냥터입니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'ellinia-tree1', min: 8, max: 13, area: '엘리니아', name: '남쪽숲 나무던전1', purpose: ['레벨업'], style: '솔로', fatigue: 3, youtube: 2, note: '초반 대체 루트. 직업과 명중, 이동 동선에 따라 체감이 갈릴 수 있습니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'hene-left', min: 13, max: 21, area: '헤네시스', name: '헤네시스 왼쪽사냥터 1~3', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, note: '13~21 구간 초반 성장 후보로 언급됩니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'moon-bunny-pq', min: 20, max: 25, area: '헤네시스', name: '월묘 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 2, youtube: 2, note: '초반 파티 퀘스트 루트. 혼자 사냥보다 파티 구성 여부가 중요합니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'ant-tunnel', min: 21, max: 30, area: '슬리피우드', name: '개미굴1 / 개미굴2', purpose: ['레벨업', '파티'], style: '파티', fatigue: 3, youtube: 2, note: '미니던전 파티 사냥 후보로 언급됩니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'mushroom-kingdom', min: 30, max: 42, area: '헤네시스', name: '버섯왕국 퀘스트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 3, youtube: 1, note: '퀘스트 진행형 루트. 재료 준비와 파티 여부에 따라 속도가 달라집니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'ludi-pq', min: 35, max: 50, area: '루디브리엄', name: '루디브리엄 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 3, youtube: 1, note: '파티 퀘스트 루트. 일부 직업은 체감 효율이 낮을 수 있습니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'time-road1', min: 38, max: 47, area: '루디브리엄', name: '시간의 길1', purpose: ['메소', '파티'], style: '파티', fatigue: 3, youtube: 2, note: '메소벌이 파티 사냥 후보로 언급됩니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'lower-village', min: 43, max: 53, area: '아랫마을', name: '까막산 입구', purpose: ['드랍', '메소'], style: '솔로', fatigue: 2, youtube: 3, note: '월묘 드랍 파밍 후보. 명중치와 이동 경로 확인이 필요합니다.', source: '플래닛 가이드 게시글 기준' },
-        { id: 'orbis-walk2', min: 45, max: 52, area: '오르비스', name: '산책로2', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, note: '파밍이 좋다는 평가가 있는 구간 후보입니다.', source: '플래닛 커뮤니티 레벨별 루트 기준' },
-        { id: 'magatia-b3', min: 40, max: 50, area: '마가티아', name: 'B-3 구역', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, note: '아이언뮤테 드랍 파밍 후보. 루루모 같은 매크로방지 몬스터 대응이 필요합니다.', source: '플래닛 가이드 게시글 기준' },
-        { id: 'magatia-c1c2', min: 50, max: 70, area: '마가티아', name: 'C-1 / C-2 구역', purpose: ['레벨업', '메소'], style: '솔로', fatigue: 4, youtube: 2, note: '저레벨 필수 구간으로 자주 언급되지만, 맵 구조와 아이템 회수 피로도가 있을 수 있습니다.', source: '플래닛 가이드 게시글 기준' }
+        { id: 'beginner-quest', min: 1, max: 13, area: '초보자 구간', name: '초보자/마이 퀘스트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 1, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반에는 사냥보다 퀘스트 완료 속도가 중요합니다. 13레벨까지 퀘스트 중심 진행이 여러 공략에서 반복 언급됩니다.', metricNote: '퀘스트형 루트라 시간당 수치보다 완료 여부가 중요', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'fang-13-26', min: 13, max: 26, area: '초반 퀘스트/재료', name: '어금니 루트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 2, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '13~26 구간 빠른 점프업 루트로 언급됩니다. 재료 구매 여부에 따라 체감 속도가 크게 달라집니다.', metricNote: '재료 준비형이라 실측 편차 큼', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'hene-hunt1', min: 8, max: 13, area: '헤네시스', name: '사냥터1', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '8~13 구간 후보. 초반 성장용으로만 참고하세요.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'ellinia-tree1', min: 8, max: 13, area: '엘리니아', name: '남쪽숲 나무던전1', purpose: ['레벨업'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반 대체 루트. 이동 동선과 직업에 따라 체감이 갈립니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'hene-left', min: 13, max: 21, area: '헤네시스', name: '헤네시스 왼쪽사냥터 1~3', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '13~21 구간 초반 성장 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'subway-1-1', min: 15, max: 15, area: '커닝시티지하철', name: '1호선 1구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 버블링 64젠 맵입니다. 초반 밀집 사냥 후보로 분류했습니다.', metricNote: '젠 64개, 버블링 Lv.15', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
+        { id: 'moon-bunny-pq', min: 20, max: 25, area: '헤네시스', name: '월묘 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 2, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반 파티 퀘스트 루트. 파티 구성 여부가 효율을 크게 좌우합니다.', metricNote: '파티 퀘스트형이라 실측 수치 누적 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'subway-1-2', min: 20, max: 35, area: '커닝시티지하철', name: '1호선 2구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 주니어 레이스 70젠, 스티지 21젠으로 확인됩니다.', metricNote: 'Lv.20~35, 총 젠 91개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
+        { id: 'ant-tunnel', min: 21, max: 30, area: '슬리피우드', name: '개미굴1 / 개미굴2', purpose: ['레벨업', '파티'], style: '파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '26~30 구간 개미굴 표지판 퀘스트와 함께 언급되는 초반 연결 후보입니다.', metricNote: '일반 사냥/퀘스트 혼합형', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'mushroom-kingdom', min: 30, max: 42, area: '버섯왕국', name: '버섯왕국 퀘스트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 3, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '30~40/42 구간 퀘스트 진행형 루트. 재료를 미리 준비하면 체류 시간이 줄어듭니다.', metricNote: '퀘스트 배율 영향으로 사냥 수치보다 완료 속도 중심', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'kerning-square-1a', min: 35, max: 35, area: '커닝 스퀘어', name: '1층 2층 A구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 체리맛 버블티 20젠 맵입니다.', metricNote: 'Lv.35, 젠 20개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
+        { id: 'kerning-square-1b', min: 35, max: 36, area: '커닝 스퀘어', name: '1층 2층 B구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 망고맛/체리맛 버블티 31젠 맵입니다.', metricNote: 'Lv.35~36, 총 젠 31개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
+        { id: 'ludi-pq', min: 35, max: 50, area: '루디브리엄', name: '루디브리엄 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 3, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '35~50 파티 퀘스트 후보. 일부 직업은 지형/기믹 때문에 체감 효율 차이가 큽니다.', metricNote: '파티 구성/숙련도별 편차 큼', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'time-road1', min: 38, max: 47, area: '루디브리엄', name: '시간의 길1', purpose: ['메소', '파티'], style: '파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '38~47 메소벌이 파티 사냥 후보로 언급됩니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'subway-1-3', min: 20, max: 48, area: '커닝시티지하철', name: '1호선 3구역', purpose: ['드랍', '레벨업'], style: '솔로', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 레이스/주니어 레이스/스티지 총 105젠 맵입니다. 레벨 폭이 넓어 검색 후보로만 둡니다.', metricNote: 'Lv.20~48, 총 젠 105개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
+        { id: 'magatia-b3', min: 40, max: 50, area: '마가티아', name: 'B-3 구역', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '아이언뮤테 드랍 파밍 후보. 매크로방지 몬스터 대응과 드랍 회수 동선 확인이 필요합니다.', metricNote: '드랍 수익 중심이라 메소 실측 누적 필요', source: '플래닛 가이드/커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'magatia-c1', min: 40, max: 70, area: '마가티아', name: 'C-1 구역', purpose: ['레벨업', '메소'], style: '솔로', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: 1500000, mesoHourMax: 2000000, note: '40~50 이후 C1 병행 루트로 언급됩니다. 아이템 회수 동선이 꼬여 피로도가 높을 수 있습니다.', metricNote: '수정협곡/CD 3~4확 수익 기준을 C1 병행 후보 참고값으로 표시', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'kerning-cd', min: 40, max: 75, area: '커닝 스퀘어/수정협곡', name: 'CD / 수정협곡', purpose: ['레벨업', '메소', '파티'], style: '솔로/잠쩔', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 1500000, mesoHourMax: 2000000, note: '40레벨 이상 CD 진입, 50레벨 이상 C1 병행, 60~70 구간 C1/C2와 다각화가 언급됩니다.', metricNote: '수정협곡 4확 150만+, 3확 200만+ 제보 기준', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'lower-village', min: 42, max: 53, area: '아랫마을', name: '까막산 입구', purpose: ['드랍', '메소'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '월묘 드랍 파밍 후보. 명중치와 이동 경로 확인이 필요합니다.', metricNote: '드랍 수익 중심이라 실측 제보 필요', source: '플래닛 커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'orbis-walk2', min: 45, max: 52, area: '오르비스', name: '산책로2', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '45~52 파밍 후보로 언급됩니다.', metricNote: '실측 제보 필요', source: '플래닛 커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'magatia-c2', min: 50, max: 80, area: '마가티아', name: 'C-2 구역', purpose: ['레벨업', '메소', '파티'], style: '솔로/파티', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '50~70/80 필수 구간으로 자주 언급됩니다. 78레벨 이후 수큐 드랍 체감 저하가 언급되어 전환 시점을 따로 봐야 합니다.', metricNote: '파티/솔플/직업별 편차가 커서 직접 기록 권장', source: 'C2 탈출 공략 및 레벨별 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
+        { id: 'golem-forest', min: 50, max: 75, area: '슬리피우드', name: '골렘의 숲 / 골숲', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '58레벨 이후 골숲 1층으로 이동해 장비 자금을 확보하는 루트가 언급됩니다.', metricNote: '수큐 판매/장비 파밍 목적, 실측 필요', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'orbis-cloud6', min: 52, max: 82, area: '오르비스', name: '구름공원6', purpose: ['메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '52~82 구간 메소 벌이 후보로 정리된 맵입니다.', metricNote: '정확한 시간당 메소 제보 필요', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'elnath-dead-forest', min: 52, max: 82, area: '엘나스', name: '죽은 나무의 숲 1~4', purpose: ['레벨업', '파티'], style: '파티/잠쩔', fatigue: 3, youtube: 2, expHourMin: 550000, expHourMax: 720000, mesoHourMin: 900000, mesoHourMax: 900000, note: '52~82 구간 대표 파티/잠쩔 후보. 후기성 수치라 조건 차이를 감안해야 합니다.', metricNote: '잠쩔/2대1 조건 후기값 환산', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'wild-bear', min: 60, max: 75, area: '무릉도원', name: '야생곰의 영토', purpose: ['메소', '레벨업'], style: '솔로', fatigue: 3, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 4000000, mesoHourMax: 4000000, note: '60~70 전후 C1/C2와 함께 다각화 후보로 언급됩니다.', metricNote: '4확 기준 간당 400만+ 제보', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'red-nose-2', min: 75, max: 120, area: '무릉도원', name: '빨간 코 해적단 소굴2', purpose: ['메소', '레벨업'], style: '솔로/잠쩔', fatigue: 2, youtube: 4, expHourMin: null, expHourMax: null, mesoHourMin: 2000000, mesoHourMax: 8000000, note: '75 전후 고스펙 진입, 80 이상 정착 후보로 언급됩니다. 마력과 확킬에 따라 수익 차이가 매우 큽니다.', metricNote: '빨코 5확 200만+부터 1확 800만+까지 스펙별 제보', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'red-nose-3', min: 80, max: 120, area: '무릉도원', name: '빨간 코 해적단 소굴3', purpose: ['메소', '레벨업'], style: '솔로/잠쩔', fatigue: 2, youtube: 4, expHourMin: 3600000, expHourMax: 4620000, mesoHourMin: 5000000, mesoHourMax: 10000000, note: '80~85 썬콜 솔플 기준 편한 메소 사냥 후보. 빨코2 자리 경쟁이 심할 때 대체 후보로 언급됩니다.', metricNote: '30분 2100마리/수익 250만, 시간당 800~1000만 언급을 범위로 표시', source: 'C2 탈출부터 빨코 붉켄 비교', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
+        { id: 'round-table', min: 70, max: 90, area: '루디브리엄', name: '원탁', purpose: ['레벨업', '메소', '파티'], style: '3인팟', fatigue: 3, youtube: 2, expHourMin: 20000000, expHourMax: 20000000, mesoHourMin: 4000000, mesoHourMax: 4000000, note: '3인팟 기준 고효율 제보가 있는 후보입니다. 파티 구성 조건이 맞을 때만 참고하세요.', metricNote: '3인 파티 1시간 후기 기준', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'harnest2', min: 78, max: 92, area: '미나르숲', name: '하늘둥지 입구 / 하둥', purpose: ['레벨업', '파티'], style: '잠쩔/사냥', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '78~92 잠쩔/사냥 루트로 언급됩니다.', metricNote: '잠쩔/솔플 구분 실측 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'red-kentaurus', min: 84, max: 110, area: '미나르숲', name: '붉은 켄타로우스 영역', purpose: ['레벨업'], style: '솔로', fatigue: 5, youtube: 1, expHourMin: 8960000, expHourMax: 8960000, mesoHourMin: 2200000, mesoHourMax: 2200000, note: '84~85 썬콜 기준 빠른 경험치 후보. 피로도와 포션 지출이 높아 성장 목적일 때만 추천됩니다.', metricNote: '마리당 6400, 30분 700마리, 수거 110만 후기 환산', source: 'C2 탈출부터 빨코 붉켄 비교', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
+        { id: 'fire-dark-battle', min: 83, max: 110, area: '미나르숲', name: '불과 어둠의 전장', purpose: ['레벨업', '파티'], style: '6인 파티', fatigue: 4, youtube: 1, expHourMin: 12000000, expHourMax: 12000000, mesoHourMin: null, mesoHourMax: null, note: '85 이상 확장 후보로 언급되며, 좌측 3번 자리 기준 경험치 제보가 있습니다.', metricNote: '6인 파티 좌측 3번 자리 간당 1200만 경험치 언급', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'forest-crossroad', min: 90, max: 100, area: '미나르숲', name: '숲의 갈림길', purpose: ['레벨업'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '90~100 구간 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'deep-sea-gorge2', min: 90, max: 120, area: '아쿠아리움', name: '깊은 바다 협곡2', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 5, youtube: 1, expHourMin: 41300000, expHourMax: 41300000, mesoHourMin: 13000000, mesoHourMax: 13000000, note: '빨코와 비교되는 고효율 후보. 경험치와 메소는 높지만 수중 이동 숙련도와 피로도를 크게 탑니다.', metricNote: '빨코 VS 깊바협 비교글의 시간당 수치 취합', source: '플래닛 커뮤니티 비교글 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'twisted-time4', min: 90, max: 150, area: '루디브리엄', name: '뒤틀린 시간의 길4', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '90~150 바이킹 구간 후보로 정리됩니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'blue-wyvern', min: 96, max: 160, area: '미나르숲', name: '블루 와이번 둥지', purpose: ['레벨업'], style: '솔로/파티', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '96~160 고레벨 성장 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'shipwreck', min: 97, max: 105, area: '아쿠아리움', name: '난파선', purpose: ['레벨업', '메소'], style: '잠쩔/솔플', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: 9000000, mesoHourMax: 10000000, note: '97~105 잠쩔/솔플 루트. 메소벌이 후보로 언급됩니다.', metricNote: '솔플 900~1000만+ 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'memory-guardian', min: 100, max: 160, area: '시간의 신전', name: '망각의 수호대장', purpose: ['메소'], style: '고스펙 솔로', fatigue: 3, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 12000000, mesoHourMax: 12000000, note: '원킬 조건에서 고메소 후보로 분류했습니다. 스펙 조건이 높습니다.', metricNote: '원킬 조건 시간당 1200만 메소 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
+        { id: 'revived-memory', min: 108, max: 123, area: '시간의 신전', name: '부활하는 기억 / 부기', purpose: ['메소', '레벨업'], style: '잠쩔/솔플', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: 100000000, mesoHourMin: 6000000, mesoHourMax: 11000000, note: '108~123 잠쩔/솔플 루트. 부기잠쩔과 솔플 메소 수치가 각각 다르게 언급됩니다.', metricNote: '부기잠쩔 1100만+, 솔플 600만+ 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
+        { id: 'regret4', min: 126, max: 200, area: '시간의 신전', name: '망각/후회 계열 4구역', purpose: ['레벨업', '메소'], style: '잠쩔/솔플', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '126 이후 장기 루트로 언급됩니다. 정확한 맵명과 수치는 후속 제보가 필요합니다.', metricNote: '정확한 맵명과 실측 제보 보강 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' }
       ];
 
       var HUNT_KEY = 'mapleplanet_datalab_hunts_v1';
@@ -479,6 +507,19 @@
 
       function purposeText(arr) { return arr.join(' · '); }
       function matchLevelScore(item, level) { if (!level) return 0; if (level >= item.min && level <= item.max) return 100; if (level < item.min) return Math.max(0, 70 - (item.min - level) * 8); return Math.max(0, 70 - (level - item.max) * 8); }
+      function metricMax(item, type) {
+        if (type === 'exp') return Number(item.expHourMax || item.expHourMin || 0);
+        return Number(item.mesoHourMax || item.mesoHourMin || 0);
+      }
+      function metricRange(min, max, suffix) {
+        if (!min && !max) return '제보 필요';
+        if (min && max && min !== max) return money(min) + '~' + money(max) + suffix;
+        return money(max || min) + suffix;
+      }
+      function sourceLink(item) {
+        if (!item.sourceUrl) return escapeHtml(item.source || '출처 메모 없음');
+        return '<a href="' + escapeHtml(item.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(item.source || '출처 보기') + '</a>';
+      }
 
       function renderMaps() {
         var level = onlyNumber(el('levelFilter').value);
@@ -493,6 +534,8 @@
         });
 
         list.sort(function (a, b) {
+          if (sort === 'expDesc') return metricMax(b, 'exp') - metricMax(a, 'exp');
+          if (sort === 'mesoDesc') return metricMax(b, 'meso') - metricMax(a, 'meso');
           if (sort === 'levelAsc') return a.min - b.min;
           if (sort === 'levelDesc') return b.min - a.min;
           if (sort === 'lowFatigue') return a.fatigue - b.fatigue;
@@ -508,8 +551,9 @@
           return '<article class="map-card">' +
             '<div class="map-top"><div><h3>' + escapeHtml(item.name) + '</h3><div class="map-area">' + escapeHtml(item.area) + ' · Lv.' + item.min + '~' + item.max + '</div></div><span class="' + pillClass + '">' + (matched ? '현재 레벨 적합' : '후보') + '</span></div>' +
             '<div class="tags"><span class="pill blue">' + escapeHtml(purposeText(item.purpose)) + '</span><span class="pill">' + escapeHtml(item.style) + '</span><span class="pill amber">피로도 ' + item.fatigue + '/5</span><span class="pill">유튜브 적합 ' + item.youtube + '/5</span></div>' +
+            '<div class="stats" style="grid-template-columns:repeat(2,1fr);margin:12px 0;"><div class="stat-card" style="min-height:86px;padding:14px;"><div class="name">시간당 경험치</div><div class="value" style="font-size:20px;">' + metricRange(item.expHourMin, item.expHourMax, '/h') + '</div></div><div class="stat-card" style="min-height:86px;padding:14px;"><div class="name">시간당 메소</div><div class="value" style="font-size:20px;">' + metricRange(item.mesoHourMin, item.mesoHourMax, '/h') + '</div></div></div>' +
             '<p class="map-note">' + escapeHtml(item.note) + '</p>' +
-            '<div class="source-note">데이터 기준: ' + escapeHtml(item.source) + '</div>' +
+            '<div class="source-note">수치 메모: ' + escapeHtml(item.metricNote || '제보 필요') + '<br>데이터 기준: ' + sourceLink(item) + '</div>' +
             '</article>';
         }).join('');
       }
@@ -662,12 +706,13 @@
       function runTests() {
         var failures = [];
         function test(name, condition) { if (!condition) failures.push(name); }
-        test('MAPS contains MaplePlanet community candidates', MAPS.length >= 10);
+        test('MAPS contains MaplePlanet community candidates', MAPS.length >= 30);
         test('No classic-only placeholder map', MAPS.map(function (m) { return m.name; }).join(' ').indexOf('하늘계단') === -1);
         test('Meso labels are income expense', el('incomeTab').textContent === '수익' && el('expenseTab').textContent === '지출');
         test('onlyNumber removes comma', onlyNumber('1,000') === 1000);
         test('matchLevelScore exact range', matchLevelScore({ min: 10, max: 20 }, 15) === 100);
         test('csv creates quoted cell', csvCell('a"b') === '"a""b"');
+        test('At least five maps have numeric exp or meso data', MAPS.filter(function (m) { return metricMax(m, 'exp') > 0 || metricMax(m, 'meso') > 0; }).length >= 5);
         if (failures.length) console.error('DataLab tests failed:', failures); else console.info('DataLab tests passed.');
       }
 
