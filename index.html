@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="메이플플래닛 사냥터 비교, 사냥 실험 기록, 메소 장부 분석을 제공하는 비공식 데이터랩">
+  <meta name="description" content="메이플플래닛 개인 사냥 기록, 레벨 목표, 메소 장부, 주문서, 큐브, 드랍 메모를 한 곳에서 관리하는 데이터랩">
   <title>메이플플래닛 데이터랩</title>
   <style>
     :root {
@@ -16,11 +16,14 @@
       --blue: #0071e3;
       --blue-soft: rgba(0, 113, 227, 0.09);
       --green: #248a3d;
+      --green-soft: rgba(36, 138, 61, 0.1);
       --red: #d70015;
+      --red-soft: rgba(215, 0, 21, 0.08);
       --amber: #a15c00;
+      --amber-soft: rgba(161, 92, 0, 0.1);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
       --radius-lg: 30px;
       --radius-md: 22px;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
     }
 
     * { box-sizing: border-box; }
@@ -36,15 +39,16 @@
 
     button, input, select, textarea { font: inherit; }
     button { border: 0; cursor: pointer; }
+    a { color: inherit; }
 
     .nav {
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 30;
       height: 48px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      background: rgba(251,251,253,0.78);
       backdrop-filter: saturate(180%) blur(20px);
-      background: rgba(251, 251, 253, 0.78);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
 
     .nav-inner {
@@ -58,36 +62,34 @@
     }
 
     .brand { font-size: 14px; font-weight: 850; letter-spacing: -0.02em; }
-    .nav a { color: rgba(0, 0, 0, 0.72); text-decoration: none; font-size: 12px; margin-left: 22px; }
+    .nav a { margin-left: 20px; color: rgba(0,0,0,0.72); text-decoration: none; font-size: 12px; }
     .nav a:hover { color: #000; }
 
     .page { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
 
     .hero {
-      min-height: 560px;
+      min-height: 540px;
       display: grid;
       place-items: center;
       text-align: center;
-      padding: 72px 0 44px;
+      padding: 70px 0 44px;
     }
 
     .eyebrow {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
       margin-bottom: 18px;
       padding: 7px 13px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(255,255,255,0.82);
       border: 1px solid var(--line);
       color: var(--muted);
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 800;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(48px, 8vw, 94px);
+      font-size: clamp(46px, 8vw, 92px);
       line-height: 0.96;
       letter-spacing: -0.065em;
       font-weight: 950;
@@ -103,7 +105,7 @@
       font-weight: 650;
     }
 
-    .hero-actions { margin-top: 30px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+    .hero-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 
     .button {
       display: inline-flex;
@@ -112,7 +114,7 @@
       min-height: 44px;
       padding: 0 20px;
       border-radius: 999px;
-      font-weight: 800;
+      font-weight: 850;
       text-decoration: none;
       transition: transform 0.16s ease, background 0.16s ease;
     }
@@ -121,44 +123,51 @@
     .primary { background: var(--blue); color: #fff; }
     .secondary { background: var(--blue-soft); color: var(--blue); }
     .neutral { background: #f5f5f7; color: var(--text); border: 1px solid var(--line); }
-    .danger { background: rgba(215, 0, 21, 0.08); color: var(--red); }
+    .danger { background: var(--red-soft); color: var(--red); }
 
     section { margin-bottom: 18px; }
-
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; align-items: start; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
-    .card, .panel {
+    .panel, .card {
       background: var(--surface);
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0,0,0,0.04);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
       padding: 32px;
     }
 
+    .card.soft { background: var(--soft); box-shadow: none; border-color: var(--line); }
+
     .mini-card {
       background: var(--surface);
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0,0,0,0.04);
       border-radius: var(--radius-md);
       padding: 22px;
       min-height: 136px;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.045);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.045);
     }
 
-    .mini-card .label {
+    .mini-card .label, .pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 38px;
-      height: 30px;
+      min-height: 28px;
       padding: 0 10px;
       border-radius: 999px;
       background: #f5f5f7;
       color: var(--muted);
       font-size: 12px;
       font-weight: 850;
-      margin-bottom: 14px;
+      white-space: nowrap;
     }
+
+    .mini-card .label { margin-bottom: 14px; }
+    .pill.blue { color: var(--blue); background: var(--blue-soft); }
+    .pill.green { color: var(--green); background: var(--green-soft); }
+    .pill.red { color: var(--red); background: var(--red-soft); }
+    .pill.amber { color: var(--amber); background: var(--amber-soft); }
 
     .mini-card h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -0.03em; }
     .mini-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
@@ -178,17 +187,12 @@
       letter-spacing: -0.06em;
     }
 
+    h3 { letter-spacing: -0.03em; }
     .desc { margin: 12px 0 0; color: var(--muted); line-height: 1.55; font-size: 15px; }
     .small { color: var(--muted); font-size: 12px; line-height: 1.55; }
 
-    .filters, .form-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .form-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .field.full { grid-column: 1 / -1; }
     label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 13px; font-weight: 800; }
 
@@ -204,59 +208,62 @@
 
     input, select { height: 48px; padding: 0 14px; }
     textarea { min-height: 94px; resize: vertical; padding: 13px 14px; }
-    input:focus, select:focus, textarea:focus { border-color: rgba(0, 113, 227, 0.55); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12); }
+    input:focus, select:focus, textarea:focus { border-color: rgba(0,113,227,0.55); box-shadow: 0 0 0 4px rgba(0,113,227,0.12); }
 
-    .map-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .quick-map-wrap { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 18px; }
+    .quick-map { min-height: 34px; padding: 0 12px; border-radius: 999px; background: #fff; color: var(--muted); border: 1px solid var(--line); font-size: 12px; font-weight: 850; }
 
-    .map-card {
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stats.three { grid-template-columns: repeat(3, 1fr); }
+    .stat-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 20px; min-height: 118px; }
+    .stat-card .name { color: var(--muted); font-size: 13px; font-weight: 850; margin-bottom: 12px; }
+    .stat-card .value { font-size: clamp(22px, 2.8vw, 32px); line-height: 1.05; letter-spacing: -0.055em; font-weight: 950; overflow-wrap: anywhere; }
+
+    .rank-controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .rank-controls select { width: auto; min-width: 190px; }
+
+    .rank-list, .note-list, .money-list, .drop-list, .market-list { display: grid; gap: 10px; }
+    .rank-row, .note-row, .money-row, .drop-row, .market-row {
+      display: grid;
+      grid-template-columns: 62px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
       border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 20px;
-      background: linear-gradient(180deg, #fff 0%, #fbfbfd 100%);
+      border-radius: 20px;
+      background: #fff;
     }
 
-    .map-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-    .map-card h3 { margin: 0; font-size: 22px; letter-spacing: -0.04em; }
-    .map-area { margin-top: 5px; color: var(--muted); font-size: 13px; }
+    .rank-number {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #f5f5f7;
+      font-weight: 950;
+      color: var(--muted);
+    }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 28px;
-      padding: 0 10px;
+    .row-main strong { display: block; font-size: 16px; margin-bottom: 5px; }
+    .row-main span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .row-num { text-align: right; font-weight: 950; letter-spacing: -0.03em; white-space: nowrap; }
+    .delete-btn, .copy-btn {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 9px;
       border-radius: 999px;
       background: #f5f5f7;
       color: var(--muted);
+      border: 1px solid var(--line);
+      margin-left: 6px;
       font-size: 12px;
       font-weight: 850;
-      white-space: nowrap;
     }
-
-    .pill.blue { color: var(--blue); background: var(--blue-soft); }
-    .pill.green { color: var(--green); background: rgba(36, 138, 61, 0.1); }
-    .pill.red { color: var(--red); background: rgba(215, 0, 21, 0.08); }
-    .pill.amber { color: var(--amber); background: rgba(161, 92, 0, 0.1); }
-
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-    .map-note { color: var(--text); line-height: 1.55; margin: 0; font-size: 14px; }
-    .source-note { color: var(--muted); font-size: 12px; margin-top: 12px; line-height: 1.5; }
-
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
-    .stat-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 20px; min-height: 112px; }
-    .stat-card .name { color: var(--muted); font-size: 13px; font-weight: 850; margin-bottom: 12px; }
-    .stat-card .value { font-size: clamp(24px, 3vw, 34px); line-height: 1.05; letter-spacing: -0.055em; font-weight: 950; overflow-wrap: anywhere; }
-
-    .list { display: grid; gap: 10px; }
-    .row { display: grid; grid-template-columns: 94px 1fr auto; gap: 12px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
-    .row-main strong { display: block; font-size: 15px; margin-bottom: 4px; }
-    .row-main span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .row-num { text-align: right; font-weight: 950; letter-spacing: -0.03em; white-space: nowrap; }
-    .delete-btn { width: 28px; height: 28px; padding: 0; border-radius: 50%; background: #f5f5f7; color: var(--muted); border: 1px solid var(--line); margin-left: 8px; }
 
     .type-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; padding: 6px; border-radius: 999px; background: #ececf0; }
     .type-tab { height: 38px; border-radius: 999px; background: transparent; color: var(--muted); font-size: 14px; font-weight: 850; }
-    .type-tab.active { background: #fff; color: var(--text); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
+    .type-tab.active { background: #fff; color: var(--text); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 
     .empty { padding: 34px 16px; text-align: center; color: var(--muted); font-weight: 650; border: 1px dashed var(--line); border-radius: 22px; background: #fff; }
 
@@ -265,18 +272,28 @@
       background: linear-gradient(135deg, #101828 0%, #1d2939 100%);
       color: #fff;
       padding: 26px;
-      min-height: 260px;
+      min-height: 280px;
       display: grid;
       align-content: space-between;
       gap: 24px;
     }
 
-    .share-card .muted { color: rgba(255, 255, 255, 0.72); }
+    .share-card .muted { color: rgba(255,255,255,0.72); }
     .share-card h3 { margin: 0; font-size: 32px; letter-spacing: -0.05em; }
     .share-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .share-box { border: 1px solid rgba(255,255,255,0.18); border-radius: 18px; padding: 14px; }
     .share-box .name { color: rgba(255,255,255,0.68); font-size: 12px; margin-bottom: 8px; }
     .share-box .value { font-size: 21px; font-weight: 900; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+
+    .notice {
+      border: 1px solid rgba(0,113,227,0.16);
+      background: var(--blue-soft);
+      color: #12508f;
+      border-radius: 20px;
+      padding: 16px 18px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
 
     .toast {
       position: fixed;
@@ -286,7 +303,7 @@
       transform: translateX(-50%) translateY(16px);
       opacity: 0;
       pointer-events: none;
-      background: rgba(29, 29, 31, 0.92);
+      background: rgba(29,29,31,0.92);
       backdrop-filter: blur(16px);
       color: #fff;
       border-radius: 999px;
@@ -301,16 +318,17 @@
     .footer { padding: 36px 0 50px; color: var(--muted); font-size: 12px; line-height: 1.6; text-align: center; }
 
     @media (max-width: 960px) {
-      .grid-2, .grid-3, .filters, .form-grid, .form-grid.two, .map-list, .stats { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .grid-4, .stats, .stats.three, .form-grid, .form-grid.four { grid-template-columns: 1fr; }
       .section-head { align-items: flex-start; flex-direction: column; }
+      .rank-controls { justify-content: flex-start; }
     }
 
     @media (max-width: 620px) {
       .nav a:not(:last-child) { display: none; }
       .page { width: min(100% - 20px, 1180px); }
       .hero { min-height: 520px; padding-top: 50px; }
-      .card, .panel { padding: 22px; border-radius: 24px; }
-      .row { grid-template-columns: 1fr; }
+      .panel, .card { padding: 22px; border-radius: 24px; }
+      .rank-row, .note-row, .money-row, .drop-row, .market-row { grid-template-columns: 1fr; }
       .row-num { text-align: left; }
       .share-grid { grid-template-columns: 1fr; }
     }
@@ -321,10 +339,10 @@
     <div class="nav-inner">
       <div class="brand">메이플플래닛 데이터랩</div>
       <div>
-        <a href="#maps">사냥터DB</a>
-        <a href="#lab">실험기록</a>
-        <a href="#meso">메소장부</a>
-        <a href="#share">공유카드</a>
+        <a href="#memo">메모장</a>
+        <a href="#level">레벨</a>
+        <a href="#sim">시뮬</a>
+        <a href="#money">장부</a>
       </div>
     </div>
   </nav>
@@ -332,108 +350,231 @@
   <main class="page">
     <section class="hero">
       <div>
-        <div class="eyebrow">MAPLE PLANET DATA LAB</div>
-        <h1>사냥터를 감으로<br>고르지 마세요.</h1>
-        <p>메이플플래닛 기준 사냥터 후보를 비교하고, 내 사냥 결과를 기록해서 나한테 맞는 맵을 찾는 데이터랩입니다.</p>
+        <div class="eyebrow">PERSONAL DATA LAB</div>
+        <h1>제보하지 말고,<br>그냥 기록하세요.</h1>
+        <p>사냥 결과를 개인 메모처럼 저장하면 내 사냥터 랭킹, 레벨 목표 시간, 메소 흐름, 주문서와 큐브 기대값이 자동으로 계산됩니다.</p>
         <div class="hero-actions">
-          <a class="button primary" href="#maps">사냥터 비교하기</a>
-          <a class="button secondary" href="#lab">내 기록 입력하기</a>
+          <a class="button primary" href="#memo">메모 시작</a>
+          <a class="button secondary" href="#level">목표 레벨 계산</a>
         </div>
       </div>
     </section>
 
     <section class="grid-3">
-      <article class="mini-card"><div class="label">차별점</div><h3>플래닛 기준</h3><p>원본 메이플스토리나 메랜 데이터를 그대로 쓰지 않고, 메이플플래닛 커뮤니티 기준 루트만 분리합니다.</p></article>
-      <article class="mini-card"><div class="label">분석</div><h3>누적 비교</h3><p>인게임이 이번 사냥 결과를 보여준다면, 데이터랩은 여러 기록을 모아 최고 효율 맵을 비교합니다.</p></article>
-      <article class="mini-card"><div class="label">장부</div><h3>수익/지출</h3><p>메소는 재고가 아니라 재화입니다. 수익과 지출로 기록하고 순수익 흐름을 확인합니다.</p></article>
+      <article class="mini-card"><div class="label">정확성</div><h3>애매한 수치 배제</h3><p>커뮤니티 제보성 사냥터 수익은 확정표로 박지 않고 개인 기록 기반 랭킹으로 계산합니다.</p></article>
+      <article class="mini-card"><div class="label">기준</div><h3>빅뱅 전 경험치표</h3><p>레벨 시뮬레이터는 2009년 공개 경험치표 기준 1~200 필요 경험치를 사용합니다.</p></article>
+      <article class="mini-card"><div class="label">확장</div><h3>D1 전체 랭킹 준비</h3><p>지금은 브라우저 개인 기록이고, 이후 익명 통계 동의 방식으로 전체 랭킹을 붙일 수 있습니다.</p></article>
     </section>
 
-    <section class="panel" id="maps">
-      <div class="section-head">
-        <div>
-          <h2>플래닛 사냥터 DB</h2>
-          <p class="desc">정확한 수치 확정표가 아니라, 메이플플래닛 커뮤니티에서 언급되는 레벨 구간과 특징을 기반으로 한 비교용 초안입니다. 실제 효율은 직업, 스펙, 파티, 자리, 컨트롤에 따라 달라집니다.</p>
-        </div>
-      </div>
-
-      <div class="filters">
-        <div class="field"><label for="levelFilter">내 레벨</label><input id="levelFilter" inputmode="numeric" placeholder="예: 45"></div>
-        <div class="field"><label for="purposeFilter">목적</label><select id="purposeFilter"><option value="all">전체</option><option value="레벨업">레벨업</option><option value="메소">메소</option><option value="드랍">드랍</option><option value="파티">파티</option><option value="퀘스트">퀘스트</option></select></div>
-        <div class="field"><label for="sortFilter">정렬</label><select id="sortFilter"><option value="match">추천순</option><option value="expDesc">경험치 높은순</option><option value="mesoDesc">메소 높은순</option><option value="levelAsc">낮은 레벨순</option><option value="levelDesc">높은 레벨순</option><option value="lowFatigue">피로도 낮은순</option><option value="youtube">유튜브 사냥 적합순</option></select></div>
-        <div class="field"><label for="keywordFilter">검색</label><input id="keywordFilter" placeholder="예: 마가티아, 월묘, 파티"></div>
-      </div>
-
-      <div class="map-list" id="mapList"></div>
-    </section>
-
-    <section class="grid-2" id="lab">
+    <section class="grid-2" id="memo">
       <article class="panel">
         <div class="section-head">
-          <div><h2>내 사냥 실험실</h2><p class="desc">인게임에서 확인한 결과를 넣으면, 여러 사냥터 기록을 누적해서 비교합니다.</p></div>
+          <div>
+            <h2>사냥 메모장</h2>
+            <p class="desc">인게임에서 확인한 시간, 경험치, 메소를 그대로 적습니다. 같은 맵 기록은 자동으로 묶입니다.</p>
+          </div>
         </div>
 
-        <div class="form-grid two">
-          <div class="field"><label for="huntMap">사냥터명</label><input id="huntMap" placeholder="예: 마가티아 C-2"></div>
+        <div class="quick-map-wrap" id="quickMapWrap"></div>
+
+        <div class="form-grid">
+          <div class="field"><label for="mapName">사냥터</label><input id="mapName" placeholder="예: 빨간 코 해적단 소굴2"></div>
+          <div class="field"><label for="characterLevel">캐릭터 레벨</label><input id="characterLevel" inputmode="numeric" placeholder="예: 85"></div>
+          <div class="field"><label for="jobName">직업</label><input id="jobName" placeholder="예: 썬콜"></div>
           <div class="field"><label for="huntMinutes">사냥 시간(분)</label><input id="huntMinutes" inputmode="numeric" placeholder="예: 30"></div>
-          <div class="field"><label for="huntExp">획득 경험치</label><input id="huntExp" inputmode="numeric" placeholder="예: 1200000"></div>
-          <div class="field"><label for="huntMeso">획득 메소</label><input id="huntMeso" inputmode="numeric" placeholder="예: 450000"></div>
-          <div class="field"><label for="huntFatigue">피로도</label><select id="huntFatigue"><option value="1">1 낮음</option><option value="2">2</option><option value="3" selected>3 보통</option><option value="4">4</option><option value="5">5 높음</option></select></div>
-          <div class="field"><label for="huntStyle">사냥 방식</label><select id="huntStyle"><option value="솔로">솔로</option><option value="파티">파티</option><option value="퀘스트">퀘스트</option><option value="파밍">파밍</option></select></div>
-          <div class="field full"><label for="huntMemo">메모</label><textarea id="huntMemo" placeholder="예: 자리 경쟁 낮음, 포션 지출 큼, 유튜브 보면서 가능"></textarea></div>
+          <div class="field"><label for="gainedExp">획득 경험치</label><input id="gainedExp" inputmode="numeric" placeholder="예: 12000000"></div>
+          <div class="field"><label for="gainedMeso">획득 메소</label><input id="gainedMeso" inputmode="numeric" placeholder="예: 2500000"></div>
+          <div class="field"><label for="dropRevenue">드랍/판매 수익</label><input id="dropRevenue" inputmode="numeric" placeholder="예: 800000"></div>
+          <div class="field"><label for="potionCost">포션/기타 비용</label><input id="potionCost" inputmode="numeric" placeholder="예: 300000"></div>
+          <div class="field"><label for="fatigueScore">피로도</label><select id="fatigueScore"><option value="1">1 낮음</option><option value="2">2</option><option value="3" selected>3 보통</option><option value="4">4</option><option value="5">5 높음</option></select></div>
+          <div class="field"><label for="comfortScore">편의성</label><select id="comfortScore"><option value="1">1 불편</option><option value="2">2</option><option value="3" selected>3 보통</option><option value="4">4</option><option value="5">5 매우 편함</option></select></div>
+          <div class="field full"><label for="huntMemo">메모</label><textarea id="huntMemo" placeholder="예: 유튜브 보면서 가능, 자리 경쟁 낮음, 포션 지출 큼, 드랍 잘 나옴"></textarea></div>
         </div>
 
         <div class="hero-actions" style="justify-content:flex-start;margin-top:18px;">
-          <button class="button primary" id="saveHuntBtn" type="button">실험 기록 저장</button>
-          <button class="button neutral" id="clearHuntBtn" type="button">기록 삭제</button>
+          <button class="button primary" id="saveNoteBtn" type="button">메모 저장</button>
+          <button class="button neutral" id="resetFormBtn" type="button">입력칸 비우기</button>
         </div>
       </article>
 
       <aside class="panel">
-        <div class="section-head"><div><h2>내 분석</h2><p class="desc">저장된 기록 기준으로 자동 계산합니다.</p></div></div>
-        <div class="stats">
-          <div class="stat-card"><div class="name">최고 경험치 효율</div><div class="value" id="bestExpText">-</div></div>
-          <div class="stat-card"><div class="name">최고 메소 효율</div><div class="value" id="bestMesoText">-</div></div>
-          <div class="stat-card"><div class="name">평균 피로도</div><div class="value" id="avgFatigueText">-</div></div>
+        <div class="section-head">
+          <div><h2>내 요약</h2><p class="desc">내 브라우저에 저장된 기록만 기준으로 계산합니다.</p></div>
         </div>
-        <div class="list" id="huntList"></div>
+        <div class="stats">
+          <div class="stat-card"><div class="name">총 기록</div><div class="value" id="totalNotesText">0</div></div>
+          <div class="stat-card"><div class="name">총 사냥 시간</div><div class="value" id="totalTimeText">0분</div></div>
+          <div class="stat-card"><div class="name">최고 EXP/h</div><div class="value" id="bestExpText">-</div></div>
+          <div class="stat-card"><div class="name">최고 순수익/h</div><div class="value" id="bestNetText">-</div></div>
+        </div>
+        <div class="notice" style="margin-top:18px;">메이플플래닛 갤러리·커뮤니티 글은 최신 흐름 파악에는 유용하지만 제보 조건 차이가 큽니다. 이 앱은 확정 수치 대신 내 기록을 기준으로 결론을 냅니다.</div>
       </aside>
     </section>
 
-    <section class="panel" id="meso">
+    <section class="panel" id="ranking">
       <div class="section-head">
-        <div><h2>메소 장부</h2><p class="desc">메소는 재화이므로 수익과 지출로 관리합니다. 사냥 수익, 드랍 판매, 장비 구매, 강화 비용을 나눠서 순수익을 봅니다.</p></div>
-        <div class="hero-actions" style="margin-top:0;"><button class="button neutral" id="downloadMesoBtn" type="button">CSV 다운로드</button><button class="button danger" id="clearMesoBtn" type="button">장부 삭제</button></div>
-      </div>
-
-      <div class="stats">
-        <div class="stat-card"><div class="name">현재 잔액</div><div class="value" id="mesoBalanceText">0</div></div>
-        <div class="stat-card"><div class="name">총 수익</div><div class="value" id="mesoIncomeText">0</div></div>
-        <div class="stat-card"><div class="name">총 지출</div><div class="value" id="mesoExpenseText">0</div></div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card" style="box-shadow:none;background:var(--soft);">
-          <div class="type-tabs"><button class="type-tab active" id="incomeTab" type="button">수익</button><button class="type-tab" id="expenseTab" type="button">지출</button></div>
-          <div class="form-grid two">
-            <div class="field"><label for="mesoCategory">분류</label><input id="mesoCategory" placeholder="예: 사냥 수익"></div>
-            <div class="field"><label for="mesoAmount">금액</label><input id="mesoAmount" inputmode="numeric" placeholder="예: 500000"></div>
-            <div class="field full"><label for="mesoMemo">메모</label><input id="mesoMemo" placeholder="예: C-2 30분 / 장비 구매 / 강화 비용"></div>
-          </div>
-          <div class="hero-actions" style="justify-content:flex-start;margin-top:18px;"><button class="button primary" id="addMesoBtn" type="button">장부에 추가</button><button class="button secondary" id="addLastHuntMesoBtn" type="button">최근 사냥 메소 불러오기</button></div>
+        <div>
+          <h2>나만의 사냥터 랭킹</h2>
+          <p class="desc">저장된 메모를 사냥터별로 묶어 평균 효율을 계산합니다. 기록이 많을수록 신뢰도가 올라갑니다.</p>
         </div>
-        <div class="list" id="mesoList"></div>
+        <div class="rank-controls">
+          <select id="rankSort">
+            <option value="netHour">순수익 높은순</option>
+            <option value="expHour">경험치 높은순</option>
+            <option value="comfort">편의성 높은순</option>
+            <option value="fatigue">피로도 낮은순</option>
+            <option value="count">기록 많은순</option>
+          </select>
+          <button class="button neutral" id="exportNotesBtn" type="button">메모 CSV</button>
+          <button class="button danger" id="clearNotesBtn" type="button">전체 메모 삭제</button>
+        </div>
+      </div>
+      <div class="rank-list" id="rankList"></div>
+    </section>
+
+    <section class="panel" id="level">
+      <div class="section-head">
+        <div>
+          <h2>레벨 목표 시뮬레이터</h2>
+          <p class="desc">빅뱅 전 1~200 경험치표 기준입니다. 메이플플래닛의 배율·퀘스트 보정은 입력한 시간당 경험치에 이미 포함됐다고 보고 계산합니다.</p>
+        </div>
+      </div>
+      <div class="form-grid four">
+        <div class="field"><label for="currentLevel">현재 레벨</label><input id="currentLevel" inputmode="numeric" value="60"></div>
+        <div class="field"><label for="currentPercent">현재 경험치 %</label><input id="currentPercent" inputmode="decimal" value="0"></div>
+        <div class="field"><label for="targetLevel">목표 레벨</label><input id="targetLevel" inputmode="numeric" value="70"></div>
+        <div class="field"><label for="expPerHour">시간당 경험치</label><input id="expPerHour" inputmode="numeric" placeholder="최근 기록 기준"></div>
+      </div>
+      <div class="hero-actions" style="justify-content:flex-start;margin-top:0;">
+        <button class="button primary" id="calcLevelBtn" type="button">목표 시간 계산</button>
+        <button class="button secondary" id="useBestExpBtn" type="button">최고 EXP/h 불러오기</button>
+      </div>
+      <div class="stats three" style="margin-top:18px;">
+        <div class="stat-card"><div class="name">필요 경험치</div><div class="value" id="needExpText">-</div></div>
+        <div class="stat-card"><div class="name">예상 시간</div><div class="value" id="needTimeText">-</div></div>
+        <div class="stat-card"><div class="name">예상 30분 판수</div><div class="value" id="needRunsText">-</div></div>
+      </div>
+      <p class="small">경험치표 출처: 2009년 MapleStory＠Wiki 경험치 테이블 및 2010년 가메톡메이플 1~200 경험치표. Big Bang 패치 이후 경험치 감소표와 다릅니다.</p>
+    </section>
+
+    <section class="grid-2" id="sim">
+      <article class="panel">
+        <div class="section-head"><div><h2>주문서 시뮬레이터</h2><p class="desc">성공률과 슬롯 수를 넣으면 기대 성공 횟수와 목표 성공 확률을 계산합니다.</p></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="scrollChance">주문서 성공률 %</label><input id="scrollChance" value="60" inputmode="decimal"></div>
+          <div class="field"><label for="scrollSlots">업그레이드 가능 횟수</label><input id="scrollSlots" value="7" inputmode="numeric"></div>
+          <div class="field"><label for="scrollGoal">목표 성공 횟수 이상</label><input id="scrollGoal" value="4" inputmode="numeric"></div>
+          <div class="field"><label for="scrollPrice">장당 가격</label><input id="scrollPrice" placeholder="선택 입력" inputmode="numeric"></div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;"><button class="button primary" id="calcScrollBtn" type="button">주문서 계산</button></div>
+        <div class="stats three" style="margin-top:18px;">
+          <div class="stat-card"><div class="name">기대 성공</div><div class="value" id="scrollExpectedText">-</div></div>
+          <div class="stat-card"><div class="name">목표 달성률</div><div class="value" id="scrollGoalText">-</div></div>
+          <div class="stat-card"><div class="name">1회 시도 비용</div><div class="value" id="scrollCostText">-</div></div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="section-head"><div><h2>큐브 기대값</h2><p class="desc">기본값은 커뮤니티 제보에서 자주 언급되는 레어→에픽 6%, 에픽→유니크 1.8%입니다. 실제 서버 확률은 직접 수정해서 쓰세요.</p></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="cubeChance">등급업 확률 %</label><input id="cubeChance" value="6" inputmode="decimal"></div>
+          <div class="field"><label for="cubePrice">큐브 1개 가격</label><input id="cubePrice" placeholder="예: 120000" inputmode="numeric"></div>
+          <div class="field"><label for="cubeTarget">목표 성공 확률 %</label><input id="cubeTarget" value="90" inputmode="decimal"></div>
+          <div class="field"><label for="cubePreset">프리셋</label><select id="cubePreset"><option value="6">레어 → 에픽 6%</option><option value="1.8">에픽 → 유니크 1.8%</option><option value="custom">직접 입력</option></select></div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;"><button class="button primary" id="calcCubeBtn" type="button">큐브 계산</button></div>
+        <div class="stats three" style="margin-top:18px;">
+          <div class="stat-card"><div class="name">평균 필요 큐브</div><div class="value" id="cubeExpectedText">-</div></div>
+          <div class="stat-card"><div class="name">목표 확률 필요량</div><div class="value" id="cubeTargetText">-</div></div>
+          <div class="stat-card"><div class="name">예상 비용</div><div class="value" id="cubeCostText">-</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid-2">
+      <article class="panel">
+        <div class="section-head">
+          <div><h2>최근 메모</h2><p class="desc">저장 기록은 내 브라우저에만 남습니다. 재입력 버튼으로 비슷한 사냥을 빠르게 반복 기록할 수 있습니다.</p></div>
+        </div>
+        <div class="note-list" id="noteList"></div>
+      </article>
+
+      <aside class="panel" id="share">
+        <div class="section-head"><div><h2>공유 카드</h2><p class="desc">최근 메모를 공유하기 좋은 문구로 복사합니다.</p></div></div>
+        <div class="share-card" id="shareCard"></div>
+        <div class="hero-actions" style="justify-content:flex-start;"><button class="button primary" id="copyShareBtn" type="button">공유 문구 복사</button></div>
+      </aside>
+    </section>
+
+    <section class="grid-2" id="market">
+      <article class="panel">
+        <div class="section-head"><div><h2>경매장 시세 메모</h2><p class="desc">서버 시세는 변동이 커서 직접 기록하는 방식이 가장 안전합니다.</p></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="marketItem">아이템</label><input id="marketItem" placeholder="예: 수상한 큐브"></div>
+          <div class="field"><label for="marketPrice">시세</label><input id="marketPrice" inputmode="numeric" placeholder="예: 250000"></div>
+          <div class="field full"><label for="marketMemo">메모</label><input id="marketMemo" placeholder="예: 새벽 매물 적음, 10개 묶음 기준"></div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;"><button class="button primary" id="saveMarketBtn" type="button">시세 저장</button></div>
+        <div class="market-list" id="marketList" style="margin-top:18px;"></div>
+      </article>
+
+      <aside class="panel">
+        <div class="section-head"><div><h2>드랍 테이블 메모</h2><p class="desc">확정 드랍표가 아닌 내 파밍 기록입니다. 몬스터, 맵, 아이템, 횟수를 남겨 체감 드랍을 비교합니다.</p></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="dropMap">맵/몬스터</label><input id="dropMap" placeholder="예: C-2 로이드"></div>
+          <div class="field"><label for="dropItem">드랍 아이템</label><input id="dropItem" placeholder="예: 수상한 큐브"></div>
+          <div class="field"><label for="dropCount">획득 수량</label><input id="dropCount" inputmode="numeric" placeholder="예: 3"></div>
+          <div class="field"><label for="dropMinutes">측정 시간(분)</label><input id="dropMinutes" inputmode="numeric" placeholder="예: 60"></div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;"><button class="button primary" id="saveDropBtn" type="button">드랍 저장</button></div>
+        <div class="drop-list" id="dropList" style="margin-top:18px;"></div>
+      </aside>
+    </section>
+
+    <section class="panel" id="money">
+      <div class="section-head">
+        <div>
+          <h2>메소 장부</h2>
+          <p class="desc">사냥 순수익, 경매장 판매, 강화 비용을 수익과 지출로 관리합니다.</p>
+        </div>
+        <div class="rank-controls">
+          <button class="button neutral" id="exportMoneyBtn" type="button">장부 CSV</button>
+          <button class="button danger" id="clearMoneyBtn" type="button">장부 삭제</button>
+        </div>
+      </div>
+
+      <div class="stats three">
+        <div class="stat-card"><div class="name">현재 잔액</div><div class="value" id="moneyBalanceText">0</div></div>
+        <div class="stat-card"><div class="name">총 수익</div><div class="value" id="moneyIncomeText">0</div></div>
+        <div class="stat-card"><div class="name">총 지출</div><div class="value" id="moneyExpenseText">0</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px;">
+        <div class="card soft">
+          <div class="type-tabs"><button class="type-tab active" id="incomeTab" type="button">수익</button><button class="type-tab" id="expenseTab" type="button">지출</button></div>
+          <div class="form-grid">
+            <div class="field"><label for="moneyCategory">분류</label><input id="moneyCategory" placeholder="예: 사냥 수익"></div>
+            <div class="field"><label for="moneyAmount">금액</label><input id="moneyAmount" inputmode="numeric" placeholder="예: 500000"></div>
+            <div class="field full"><label for="moneyMemo">메모</label><input id="moneyMemo" placeholder="예: 빨코2 30분 / 강화 비용 / 장비 구매"></div>
+          </div>
+          <div class="hero-actions" style="justify-content:flex-start;margin-top:18px;"><button class="button primary" id="saveMoneyBtn" type="button">장부 저장</button><button class="button secondary" id="useLastNetBtn" type="button">최근 순수익 불러오기</button></div>
+        </div>
+        <div class="money-list" id="moneyList"></div>
       </div>
     </section>
 
-    <section class="grid-2" id="share">
-      <article class="panel">
-        <div class="section-head"><div><h2>공유 카드</h2><p class="desc">최근 사냥 실험 기록을 카페, 디스코드, 오픈채팅에 붙여넣기 좋은 요약으로 만듭니다.</p></div></div>
-        <div class="hero-actions" style="justify-content:flex-start;margin-top:0;"><button class="button primary" id="copyShareBtn" type="button">공유 문구 복사</button></div>
-      </article>
-      <aside class="share-card" id="shareCard"></aside>
+    <section class="panel">
+      <div class="section-head">
+        <div><h2>전체 랭킹 확장 구조</h2><p class="desc">현재는 개인 기록장입니다. Cloudflare Workers + D1을 붙이면 동의한 사용자 기록만 익명 집계해 전체 랭킹으로 확장할 수 있습니다.</p></div>
+      </div>
+      <div class="grid-3">
+        <article class="mini-card"><div class="label">1단계</div><h3>개인 기록</h3><p>localStorage 저장. 로그인 없이 바로 쓰게 해서 진입장벽을 낮춥니다.</p></article>
+        <article class="mini-card"><div class="label">2단계</div><h3>익명 통계</h3><p>맵명, 레벨, 직업, 시간당 효율 같은 통계만 서버에 전송합니다.</p></article>
+        <article class="mini-card"><div class="label">3단계</div><h3>전체 랭킹</h3><p>D1에서 평균/중앙값/표본 수를 계산해 갤러리식 제보보다 덜 흔들리는 랭킹을 만듭니다.</p></article>
+      </div>
     </section>
 
-    <footer class="footer">이 사이트는 메이플플래닛 유저의 기록 비교를 돕는 비공식 데이터랩입니다. 자동사냥, 매크로, 게임 입력 자동화 기능은 제공하지 않습니다.</footer>
+    <footer class="footer">메이플플래닛 데이터랩은 개인 기록과 통계를 위한 비공식 웹앱입니다. 자동사냥, 매크로, 게임 입력 자동화 기능은 제공하지 않습니다.</footer>
   </main>
 
   <div class="toast" id="toast">완료</div>
@@ -442,281 +583,424 @@
     (function () {
       'use strict';
 
-      var MAPS = [
-        { id: 'beginner-quest', min: 1, max: 13, area: '초보자 구간', name: '초보자/마이 퀘스트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 1, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반에는 사냥보다 퀘스트 완료 속도가 중요합니다. 13레벨까지 퀘스트 중심 진행이 여러 공략에서 반복 언급됩니다.', metricNote: '퀘스트형 루트라 시간당 수치보다 완료 여부가 중요', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'fang-13-26', min: 13, max: 26, area: '초반 퀘스트/재료', name: '어금니 루트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 2, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '13~26 구간 빠른 점프업 루트로 언급됩니다. 재료 구매 여부에 따라 체감 속도가 크게 달라집니다.', metricNote: '재료 준비형이라 실측 편차 큼', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'hene-hunt1', min: 8, max: 13, area: '헤네시스', name: '사냥터1', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '8~13 구간 후보. 초반 성장용으로만 참고하세요.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'ellinia-tree1', min: 8, max: 13, area: '엘리니아', name: '남쪽숲 나무던전1', purpose: ['레벨업'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반 대체 루트. 이동 동선과 직업에 따라 체감이 갈립니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'hene-left', min: 13, max: 21, area: '헤네시스', name: '헤네시스 왼쪽사냥터 1~3', purpose: ['레벨업'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '13~21 구간 초반 성장 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'subway-1-1', min: 15, max: 15, area: '커닝시티지하철', name: '1호선 1구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 버블링 64젠 맵입니다. 초반 밀집 사냥 후보로 분류했습니다.', metricNote: '젠 64개, 버블링 Lv.15', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
-        { id: 'moon-bunny-pq', min: 20, max: 25, area: '헤네시스', name: '월묘 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 2, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '초반 파티 퀘스트 루트. 파티 구성 여부가 효율을 크게 좌우합니다.', metricNote: '파티 퀘스트형이라 실측 수치 누적 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'subway-1-2', min: 20, max: 35, area: '커닝시티지하철', name: '1호선 2구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 주니어 레이스 70젠, 스티지 21젠으로 확인됩니다.', metricNote: 'Lv.20~35, 총 젠 91개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
-        { id: 'ant-tunnel', min: 21, max: 30, area: '슬리피우드', name: '개미굴1 / 개미굴2', purpose: ['레벨업', '파티'], style: '파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '26~30 구간 개미굴 표지판 퀘스트와 함께 언급되는 초반 연결 후보입니다.', metricNote: '일반 사냥/퀘스트 혼합형', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'mushroom-kingdom', min: 30, max: 42, area: '버섯왕국', name: '버섯왕국 퀘스트', purpose: ['퀘스트', '레벨업'], style: '퀘스트', fatigue: 3, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '30~40/42 구간 퀘스트 진행형 루트. 재료를 미리 준비하면 체류 시간이 줄어듭니다.', metricNote: '퀘스트 배율 영향으로 사냥 수치보다 완료 속도 중심', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'kerning-square-1a', min: 35, max: 35, area: '커닝 스퀘어', name: '1층 2층 A구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 체리맛 버블티 20젠 맵입니다.', metricNote: 'Lv.35, 젠 20개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
-        { id: 'kerning-square-1b', min: 35, max: 36, area: '커닝 스퀘어', name: '1층 2층 B구역', purpose: ['레벨업', '드랍'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 망고맛/체리맛 버블티 31젠 맵입니다.', metricNote: 'Lv.35~36, 총 젠 31개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
-        { id: 'ludi-pq', min: 35, max: 50, area: '루디브리엄', name: '루디브리엄 파티 퀘스트', purpose: ['파티', '퀘스트'], style: '파티', fatigue: 3, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '35~50 파티 퀘스트 후보. 일부 직업은 지형/기믹 때문에 체감 효율 차이가 큽니다.', metricNote: '파티 구성/숙련도별 편차 큼', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'time-road1', min: 38, max: 47, area: '루디브리엄', name: '시간의 길1', purpose: ['메소', '파티'], style: '파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '38~47 메소벌이 파티 사냥 후보로 언급됩니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'subway-1-3', min: 20, max: 48, area: '커닝시티지하철', name: '1호선 3구역', purpose: ['드랍', '레벨업'], style: '솔로', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '조아요 DB 기준 레이스/주니어 레이스/스티지 총 105젠 맵입니다. 레벨 폭이 넓어 검색 후보로만 둡니다.', metricNote: 'Lv.20~48, 총 젠 105개', source: '메이플 플래닛 조아요 맵 DB', sourceUrl: 'https://chowayo.com/maps' },
-        { id: 'magatia-b3', min: 40, max: 50, area: '마가티아', name: 'B-3 구역', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '아이언뮤테 드랍 파밍 후보. 매크로방지 몬스터 대응과 드랍 회수 동선 확인이 필요합니다.', metricNote: '드랍 수익 중심이라 메소 실측 누적 필요', source: '플래닛 가이드/커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'magatia-c1', min: 40, max: 70, area: '마가티아', name: 'C-1 구역', purpose: ['레벨업', '메소'], style: '솔로', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: 1500000, mesoHourMax: 2000000, note: '40~50 이후 C1 병행 루트로 언급됩니다. 아이템 회수 동선이 꼬여 피로도가 높을 수 있습니다.', metricNote: '수정협곡/CD 3~4확 수익 기준을 C1 병행 후보 참고값으로 표시', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'kerning-cd', min: 40, max: 75, area: '커닝 스퀘어/수정협곡', name: 'CD / 수정협곡', purpose: ['레벨업', '메소', '파티'], style: '솔로/잠쩔', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 1500000, mesoHourMax: 2000000, note: '40레벨 이상 CD 진입, 50레벨 이상 C1 병행, 60~70 구간 C1/C2와 다각화가 언급됩니다.', metricNote: '수정협곡 4확 150만+, 3확 200만+ 제보 기준', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'lower-village', min: 42, max: 53, area: '아랫마을', name: '까막산 입구', purpose: ['드랍', '메소'], style: '솔로', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '월묘 드랍 파밍 후보. 명중치와 이동 경로 확인이 필요합니다.', metricNote: '드랍 수익 중심이라 실측 제보 필요', source: '플래닛 커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'orbis-walk2', min: 45, max: 52, area: '오르비스', name: '산책로2', purpose: ['드랍', '메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '45~52 파밍 후보로 언급됩니다.', metricNote: '실측 제보 필요', source: '플래닛 커뮤니티 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'magatia-c2', min: 50, max: 80, area: '마가티아', name: 'C-2 구역', purpose: ['레벨업', '메소', '파티'], style: '솔로/파티', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '50~70/80 필수 구간으로 자주 언급됩니다. 78레벨 이후 수큐 드랍 체감 저하가 언급되어 전환 시점을 따로 봐야 합니다.', metricNote: '파티/솔플/직업별 편차가 커서 직접 기록 권장', source: 'C2 탈출 공략 및 레벨별 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
-        { id: 'golem-forest', min: 50, max: 75, area: '슬리피우드', name: '골렘의 숲 / 골숲', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '58레벨 이후 골숲 1층으로 이동해 장비 자금을 확보하는 루트가 언급됩니다.', metricNote: '수큐 판매/장비 파밍 목적, 실측 필요', source: '저자본 썬콜 육성 루트', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'orbis-cloud6', min: 52, max: 82, area: '오르비스', name: '구름공원6', purpose: ['메소'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '52~82 구간 메소 벌이 후보로 정리된 맵입니다.', metricNote: '정확한 시간당 메소 제보 필요', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'elnath-dead-forest', min: 52, max: 82, area: '엘나스', name: '죽은 나무의 숲 1~4', purpose: ['레벨업', '파티'], style: '파티/잠쩔', fatigue: 3, youtube: 2, expHourMin: 550000, expHourMax: 720000, mesoHourMin: 900000, mesoHourMax: 900000, note: '52~82 구간 대표 파티/잠쩔 후보. 후기성 수치라 조건 차이를 감안해야 합니다.', metricNote: '잠쩔/2대1 조건 후기값 환산', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'wild-bear', min: 60, max: 75, area: '무릉도원', name: '야생곰의 영토', purpose: ['메소', '레벨업'], style: '솔로', fatigue: 3, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 4000000, mesoHourMax: 4000000, note: '60~70 전후 C1/C2와 함께 다각화 후보로 언급됩니다.', metricNote: '4확 기준 간당 400만+ 제보', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'red-nose-2', min: 75, max: 120, area: '무릉도원', name: '빨간 코 해적단 소굴2', purpose: ['메소', '레벨업'], style: '솔로/잠쩔', fatigue: 2, youtube: 4, expHourMin: null, expHourMax: null, mesoHourMin: 2000000, mesoHourMax: 8000000, note: '75 전후 고스펙 진입, 80 이상 정착 후보로 언급됩니다. 마력과 확킬에 따라 수익 차이가 매우 큽니다.', metricNote: '빨코 5확 200만+부터 1확 800만+까지 스펙별 제보', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'red-nose-3', min: 80, max: 120, area: '무릉도원', name: '빨간 코 해적단 소굴3', purpose: ['메소', '레벨업'], style: '솔로/잠쩔', fatigue: 2, youtube: 4, expHourMin: 3600000, expHourMax: 4620000, mesoHourMin: 5000000, mesoHourMax: 10000000, note: '80~85 썬콜 솔플 기준 편한 메소 사냥 후보. 빨코2 자리 경쟁이 심할 때 대체 후보로 언급됩니다.', metricNote: '30분 2100마리/수익 250만, 시간당 800~1000만 언급을 범위로 표시', source: 'C2 탈출부터 빨코 붉켄 비교', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
-        { id: 'round-table', min: 70, max: 90, area: '루디브리엄', name: '원탁', purpose: ['레벨업', '메소', '파티'], style: '3인팟', fatigue: 3, youtube: 2, expHourMin: 20000000, expHourMax: 20000000, mesoHourMin: 4000000, mesoHourMax: 4000000, note: '3인팟 기준 고효율 제보가 있는 후보입니다. 파티 구성 조건이 맞을 때만 참고하세요.', metricNote: '3인 파티 1시간 후기 기준', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'harnest2', min: 78, max: 92, area: '미나르숲', name: '하늘둥지 입구 / 하둥', purpose: ['레벨업', '파티'], style: '잠쩔/사냥', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '78~92 잠쩔/사냥 루트로 언급됩니다.', metricNote: '잠쩔/솔플 구분 실측 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'red-kentaurus', min: 84, max: 110, area: '미나르숲', name: '붉은 켄타로우스 영역', purpose: ['레벨업'], style: '솔로', fatigue: 5, youtube: 1, expHourMin: 8960000, expHourMax: 8960000, mesoHourMin: 2200000, mesoHourMax: 2200000, note: '84~85 썬콜 기준 빠른 경험치 후보. 피로도와 포션 지출이 높아 성장 목적일 때만 추천됩니다.', metricNote: '마리당 6400, 30분 700마리, 수거 110만 후기 환산', source: 'C2 탈출부터 빨코 붉켄 비교', sourceUrl: 'https://game.savetip.co.kr/maple-planet-ice-lightning-guide-78-85/' },
-        { id: 'fire-dark-battle', min: 83, max: 110, area: '미나르숲', name: '불과 어둠의 전장', purpose: ['레벨업', '파티'], style: '6인 파티', fatigue: 4, youtube: 1, expHourMin: 12000000, expHourMax: 12000000, mesoHourMin: null, mesoHourMax: null, note: '85 이상 확장 후보로 언급되며, 좌측 3번 자리 기준 경험치 제보가 있습니다.', metricNote: '6인 파티 좌측 3번 자리 간당 1200만 경험치 언급', source: '레벨별 사냥터 총정리 v1.5', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'forest-crossroad', min: 90, max: 100, area: '미나르숲', name: '숲의 갈림길', purpose: ['레벨업'], style: '솔로', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '90~100 구간 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'deep-sea-gorge2', min: 90, max: 120, area: '아쿠아리움', name: '깊은 바다 협곡2', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 5, youtube: 1, expHourMin: 41300000, expHourMax: 41300000, mesoHourMin: 13000000, mesoHourMax: 13000000, note: '빨코와 비교되는 고효율 후보. 경험치와 메소는 높지만 수중 이동 숙련도와 피로도를 크게 탑니다.', metricNote: '빨코 VS 깊바협 비교글의 시간당 수치 취합', source: '플래닛 커뮤니티 비교글 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'twisted-time4', min: 90, max: 150, area: '루디브리엄', name: '뒤틀린 시간의 길4', purpose: ['레벨업', '메소'], style: '솔로/파티', fatigue: 4, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '90~150 바이킹 구간 후보로 정리됩니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'blue-wyvern', min: 96, max: 160, area: '미나르숲', name: '블루 와이번 둥지', purpose: ['레벨업'], style: '솔로/파티', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '96~160 고레벨 성장 후보입니다.', metricNote: '실측 제보 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'shipwreck', min: 97, max: 105, area: '아쿠아리움', name: '난파선', purpose: ['레벨업', '메소'], style: '잠쩔/솔플', fatigue: 4, youtube: 1, expHourMin: null, expHourMax: null, mesoHourMin: 9000000, mesoHourMax: 10000000, note: '97~105 잠쩔/솔플 루트. 메소벌이 후보로 언급됩니다.', metricNote: '솔플 900~1000만+ 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'memory-guardian', min: 100, max: 160, area: '시간의 신전', name: '망각의 수호대장', purpose: ['메소'], style: '고스펙 솔로', fatigue: 3, youtube: 3, expHourMin: null, expHourMax: null, mesoHourMin: 12000000, mesoHourMax: 12000000, note: '원킬 조건에서 고메소 후보로 분류했습니다. 스펙 조건이 높습니다.', metricNote: '원킬 조건 시간당 1200만 메소 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://itsm.tistory.com/362' },
-        { id: 'revived-memory', min: 108, max: 123, area: '시간의 신전', name: '부활하는 기억 / 부기', purpose: ['메소', '레벨업'], style: '잠쩔/솔플', fatigue: 2, youtube: 3, expHourMin: null, expHourMax: 100000000, mesoHourMin: 6000000, mesoHourMax: 11000000, note: '108~123 잠쩔/솔플 루트. 부기잠쩔과 솔플 메소 수치가 각각 다르게 언급됩니다.', metricNote: '부기잠쩔 1100만+, 솔플 600만+ 제보 취합', source: '플래닛 커뮤니티 제보 취합', sourceUrl: 'https://game.savetip.co.kr/maple-planet-suncall-low-capital-route/' },
-        { id: 'regret4', min: 126, max: 200, area: '시간의 신전', name: '망각/후회 계열 4구역', purpose: ['레벨업', '메소'], style: '잠쩔/솔플', fatigue: 3, youtube: 2, expHourMin: null, expHourMax: null, mesoHourMin: null, mesoHourMax: null, note: '126 이후 장기 루트로 언급됩니다. 정확한 맵명과 수치는 후속 제보가 필요합니다.', metricNote: '정확한 맵명과 실측 제보 보강 필요', source: '플래닛 레벨별 루트 취합', sourceUrl: 'https://itsm.tistory.com/362' }
-      ];
-
-      var HUNT_KEY = 'mapleplanet_datalab_hunts_v1';
-      var MESO_KEY = 'mapleplanet_datalab_meso_v1';
+      var NOTE_KEY = 'mapleplanet_personal_notes_v2';
+      var MONEY_KEY = 'mapleplanet_money_book_v2';
+      var MARKET_KEY = 'mapleplanet_market_notes_v1';
+      var DROP_KEY = 'mapleplanet_drop_notes_v1';
       var NEWLINE = String.fromCharCode(10);
       var CSV_BOM = String.fromCharCode(65279);
       var fmt = new Intl.NumberFormat('ko-KR');
-      var currentMesoType = 'income';
+      var moneyType = 'income';
+      var quickMaps = ['C-2 구역', 'CD / 수정협곡', '죽은 나무의 숲', '빨간 코 해적단 소굴2', '빨간 코 해적단 소굴3', '하늘둥지2', '깊은 바다 협곡2', '부활하는 기억', '난파선'];
+      var EXP_TABLE = ('15,34,57,92,135,372,560,840,1242,1716,2360,3216,4200,5460,7050,8840,11040,13716,16680,20216,24402,28980,34320,40512,47216,54900,63666,73080,83720,95700,108480,122760,138666,155540,174216,194832,216600,240500,266682,294216,324240,356916,391160,428280,468450,510420,555680,604416,655200,709716,748608,789631,832902,878545,926689,977471,1031036,1087536,1147032,1209994,1276301,1346242,1420016,1497832,1579913,1666492,1757815,1854143,1955750,2062925,2175973,2295216,2420993,2553663,2693603,2841212,2996910,3161140,3334370,3517093,3709829,3913127,4127566,4353756,4592341,4844001,5109452,5389449,5684790,5996316,6324914,6671519,7037118,7422752,7829518,8258575,8711144,9188514,9692044,10223168,10783397,11374327,11997640,12655110,13348610,14080113,14851703,15665576,16524049,17429566,18384706,19392187,20454878,21575805,22758159,24005306,25320796,26708375,28171993,29715818,31344244,33061908,34873700,36784778,38800583,40926854,43169645,45535341,48030677,50662758,53439077,56367538,59456479,62714694,66151459,69776558,73600313,77633610,81887931,86375389,91108760,96101520,101367883,106992842,112782213,118962678,125481832,132358236,139611467,147262175,155332142,163844343,172823012,182293713,192283408,202820538,213935103,225658746,238024845,251068606,264827165,279339639,294647508,310794191,327825712,345790561,364739883,384727628,405810702,428049128,451506220,476248760,502347192,529875818,558913012,589541445,621848316,655925603,691870326,729784819,769777027,811960808,856456260,903390063,952895838,1005114529,1060194805,1118293480,1179575962,1244216724,1312399800,1384319309,1460180007,1540197871,1624600714,1713628833,1807535693,1906558648,2011069705,2121276324').split(',').map(Number);
 
       function el(id) { return document.getElementById(id); }
-      function money(n) { return fmt.format(Math.round(Number(n) || 0)); }
-      function onlyNumber(value) { var num = Number(String(value || '').replace(/,/g, '').trim()); return Number.isFinite(num) ? num : 0; }
-      function escapeHtml(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
-      function createId() { return String(Date.now()) + '-' + String(Math.random()).slice(2); }
-      function showToast(message) { var t = el('toast'); t.textContent = message; t.classList.add('show'); window.setTimeout(function () { t.classList.remove('show'); }, 1700); }
-      function getArray(key) { try { var parsed = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (err) { return []; } }
-      function setArray(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
-      function huntRecords() { return getArray(HUNT_KEY); }
-      function mesoRecords() { return getArray(MESO_KEY); }
+      function n(value) { var num = Number(String(value || '').replace(/,/g, '').trim()); return Number.isFinite(num) ? num : 0; }
+      function f(value) { return fmt.format(Math.round(Number(value) || 0)); }
+      function makeId() { return String(Date.now()) + '-' + String(Math.random()).slice(2); }
+      function esc(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+      function toast(message) { var t = el('toast'); t.textContent = message; t.classList.add('show'); window.setTimeout(function () { t.classList.remove('show'); }, 1700); }
+      function arr(key) { try { var parsed = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(parsed) ? parsed : []; } catch (e) { return []; } }
+      function setArr(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+      function notes() { return arr(NOTE_KEY); }
+      function moneyRows() { return arr(MONEY_KEY); }
+      function marketRows() { return arr(MARKET_KEY); }
+      function dropRows() { return arr(DROP_KEY); }
       function csvCell(value) { var text = value === null || value === undefined ? '' : String(value); return '"' + text.replace(/"/g, '""') + '"'; }
       function makeCsv(rows) { return CSV_BOM + rows.map(function (r) { return r.map(csvCell).join(','); }).join(NEWLINE); }
-      function downloadBlob(filename, text) { var blob = new Blob([text], { type: 'text/csv;charset=utf-8' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+      function download(filename, text) { var blob = new Blob([text], { type: 'text/csv;charset=utf-8' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
 
-      function purposeText(arr) { return arr.join(' · '); }
-      function matchLevelScore(item, level) { if (!level) return 0; if (level >= item.min && level <= item.max) return 100; if (level < item.min) return Math.max(0, 70 - (item.min - level) * 8); return Math.max(0, 70 - (level - item.max) * 8); }
-      function metricMax(item, type) {
-        if (type === 'exp') return Number(item.expHourMax || item.expHourMin || 0);
-        return Number(item.mesoHourMax || item.mesoHourMin || 0);
-      }
-      function metricRange(min, max, suffix) {
-        if (!min && !max) return '제보 필요';
-        if (min && max && min !== max) return money(min) + '~' + money(max) + suffix;
-        return money(max || min) + suffix;
-      }
-      function sourceLink(item) {
-        if (!item.sourceUrl) return escapeHtml(item.source || '출처 메모 없음');
-        return '<a href="' + escapeHtml(item.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(item.source || '출처 보기') + '</a>';
-      }
-
-      function renderMaps() {
-        var level = onlyNumber(el('levelFilter').value);
-        var purpose = el('purposeFilter').value;
-        var sort = el('sortFilter').value;
-        var keyword = el('keywordFilter').value.trim().toLowerCase();
-        var list = MAPS.filter(function (item) {
-          var text = (item.area + ' ' + item.name + ' ' + item.note + ' ' + purposeText(item.purpose)).toLowerCase();
-          var purposeOk = purpose === 'all' || item.purpose.indexOf(purpose) !== -1;
-          var keywordOk = !keyword || text.indexOf(keyword) !== -1;
-          return purposeOk && keywordOk;
-        });
-
-        list.sort(function (a, b) {
-          if (sort === 'expDesc') return metricMax(b, 'exp') - metricMax(a, 'exp');
-          if (sort === 'mesoDesc') return metricMax(b, 'meso') - metricMax(a, 'meso');
-          if (sort === 'levelAsc') return a.min - b.min;
-          if (sort === 'levelDesc') return b.min - a.min;
-          if (sort === 'lowFatigue') return a.fatigue - b.fatigue;
-          if (sort === 'youtube') return b.youtube - a.youtube;
-          return matchLevelScore(b, level) - matchLevelScore(a, level);
-        });
-
-        if (!list.length) { el('mapList').innerHTML = '<div class="empty">조건에 맞는 사냥터 후보가 없습니다.</div>'; return; }
-
-        el('mapList').innerHTML = list.map(function (item) {
-          var matched = level && level >= item.min && level <= item.max;
-          var pillClass = matched ? 'pill green' : 'pill';
-          return '<article class="map-card">' +
-            '<div class="map-top"><div><h3>' + escapeHtml(item.name) + '</h3><div class="map-area">' + escapeHtml(item.area) + ' · Lv.' + item.min + '~' + item.max + '</div></div><span class="' + pillClass + '">' + (matched ? '현재 레벨 적합' : '후보') + '</span></div>' +
-            '<div class="tags"><span class="pill blue">' + escapeHtml(purposeText(item.purpose)) + '</span><span class="pill">' + escapeHtml(item.style) + '</span><span class="pill amber">피로도 ' + item.fatigue + '/5</span><span class="pill">유튜브 적합 ' + item.youtube + '/5</span></div>' +
-            '<div class="stats" style="grid-template-columns:repeat(2,1fr);margin:12px 0;"><div class="stat-card" style="min-height:86px;padding:14px;"><div class="name">시간당 경험치</div><div class="value" style="font-size:20px;">' + metricRange(item.expHourMin, item.expHourMax, '/h') + '</div></div><div class="stat-card" style="min-height:86px;padding:14px;"><div class="name">시간당 메소</div><div class="value" style="font-size:20px;">' + metricRange(item.mesoHourMin, item.mesoHourMax, '/h') + '</div></div></div>' +
-            '<p class="map-note">' + escapeHtml(item.note) + '</p>' +
-            '<div class="source-note">수치 메모: ' + escapeHtml(item.metricNote || '제보 필요') + '<br>데이터 기준: ' + sourceLink(item) + '</div>' +
-            '</article>';
-        }).join('');
-      }
-
-      function saveHunt() {
-        var map = el('huntMap').value.trim();
-        var minutes = onlyNumber(el('huntMinutes').value);
-        var exp = onlyNumber(el('huntExp').value);
-        var meso = onlyNumber(el('huntMeso').value);
-        var fatigue = onlyNumber(el('huntFatigue').value);
-        var style = el('huntStyle').value;
-        var memo = el('huntMemo').value.trim() || '-';
-        if (!map || minutes <= 0) { showToast('사냥터명과 사냥 시간을 입력해주세요.'); return; }
+      function calcNote(raw) {
+        var minutes = Math.max(0, Number(raw.minutes || 0));
         var hour = minutes / 60;
-        var record = { id: createId(), date: new Date().toISOString(), map: map, minutes: minutes, exp: exp, meso: meso, fatigue: fatigue, style: style, memo: memo, expHour: hour > 0 ? Math.round(exp / hour) : 0, mesoHour: hour > 0 ? Math.round(meso / hour) : 0 };
-        var records = huntRecords();
-        records.unshift(record);
-        setArray(HUNT_KEY, records.slice(0, 200));
-        el('huntMap').value = ''; el('huntMinutes').value = ''; el('huntExp').value = ''; el('huntMeso').value = ''; el('huntMemo').value = '';
-        renderHunts(); renderShare(); showToast('사냥 실험 기록을 저장했습니다.');
+        var totalMeso = Number(raw.meso || 0) + Number(raw.drop || 0);
+        var net = totalMeso - Number(raw.cost || 0);
+        raw.totalMeso = totalMeso;
+        raw.net = net;
+        raw.expHour = hour > 0 ? Math.round(Number(raw.exp || 0) / hour) : 0;
+        raw.mesoHour = hour > 0 ? Math.round(totalMeso / hour) : 0;
+        raw.netHour = hour > 0 ? Math.round(net / hour) : 0;
+        return raw;
       }
 
-      function deleteHunt(id) { setArray(HUNT_KEY, huntRecords().filter(function (r) { return r.id !== id; })); renderHunts(); renderShare(); showToast('기록을 삭제했습니다.'); }
-
-      function renderHunts() {
-        var records = huntRecords();
-        if (!records.length) {
-          el('bestExpText').textContent = '-'; el('bestMesoText').textContent = '-'; el('avgFatigueText').textContent = '-';
-          el('huntList').innerHTML = '<div class="empty">아직 사냥 실험 기록이 없습니다.</div>';
-          return;
-        }
-        var bestExp = records.slice().sort(function (a, b) { return b.expHour - a.expHour; })[0];
-        var bestMeso = records.slice().sort(function (a, b) { return b.mesoHour - a.mesoHour; })[0];
-        var avgFatigue = records.reduce(function (sum, r) { return sum + Number(r.fatigue || 0); }, 0) / records.length;
-        el('bestExpText').textContent = bestExp.map + ' · ' + money(bestExp.expHour) + '/h';
-        el('bestMesoText').textContent = bestMeso.map + ' · ' + money(bestMeso.mesoHour) + '/h';
-        el('avgFatigueText').textContent = avgFatigue.toFixed(1) + ' / 5';
-        el('huntList').innerHTML = records.map(function (r) {
-          return '<div class="row"><span class="pill blue">' + escapeHtml(r.style) + '</span><div class="row-main"><strong>' + escapeHtml(r.map) + '</strong><span>' + r.minutes + '분 · EXP/h ' + money(r.expHour) + ' · MESO/h ' + money(r.mesoHour) + ' · 피로도 ' + r.fatigue + '/5<br>' + escapeHtml(r.memo) + '</span></div><div class="row-num">' + money(r.meso) + '<button class="delete-btn" data-delete-hunt="' + escapeHtml(r.id) + '" type="button">x</button></div></div>';
-        }).join('');
-        bindDynamicButtons();
+      function clearMemoForm() {
+        ['mapName', 'characterLevel', 'jobName', 'huntMinutes', 'gainedExp', 'gainedMeso', 'dropRevenue', 'potionCost', 'huntMemo'].forEach(function (field) { el(field).value = ''; });
+        el('fatigueScore').value = '3';
+        el('comfortScore').value = '3';
       }
 
-      function setMesoType(type) {
-        currentMesoType = type === 'expense' ? 'expense' : 'income';
-        el('incomeTab').classList.toggle('active', currentMesoType === 'income');
-        el('expenseTab').classList.toggle('active', currentMesoType === 'expense');
-      }
-
-      function addMeso() {
-        var category = el('mesoCategory').value.trim() || (currentMesoType === 'income' ? '수익' : '지출');
-        var amount = onlyNumber(el('mesoAmount').value);
-        var memo = el('mesoMemo').value.trim() || '-';
-        if (amount <= 0) { showToast('금액을 입력해주세요.'); return; }
-        var list = mesoRecords();
-        list.unshift({ id: createId(), date: new Date().toISOString(), type: currentMesoType, category: category, amount: amount, memo: memo });
-        setArray(MESO_KEY, list.slice(0, 300));
-        el('mesoAmount').value = ''; el('mesoMemo').value = '';
-        renderMeso(); showToast('메소 장부에 추가했습니다.');
-      }
-
-      function deleteMeso(id) { setArray(MESO_KEY, mesoRecords().filter(function (r) { return r.id !== id; })); renderMeso(); showToast('장부 내역을 삭제했습니다.'); }
-
-      function renderMeso() {
-        var records = mesoRecords();
-        var income = records.filter(function (r) { return r.type === 'income'; }).reduce(function (s, r) { return s + Number(r.amount || 0); }, 0);
-        var expense = records.filter(function (r) { return r.type === 'expense'; }).reduce(function (s, r) { return s + Number(r.amount || 0); }, 0);
-        el('mesoBalanceText').textContent = money(income - expense);
-        el('mesoIncomeText').textContent = money(income);
-        el('mesoExpenseText').textContent = money(expense);
-        if (!records.length) { el('mesoList').innerHTML = '<div class="empty">아직 메소 장부 내역이 없습니다.</div>'; return; }
-        el('mesoList').innerHTML = records.map(function (r) {
-          var isIncome = r.type === 'income';
-          var label = isIncome ? '수익' : '지출';
-          var cls = isIncome ? 'green' : 'red';
-          var sign = isIncome ? '+' : '-';
-          return '<div class="row"><span class="pill ' + cls + '">' + label + '</span><div class="row-main"><strong>' + escapeHtml(r.category) + '</strong><span>' + new Date(r.date).toLocaleString('ko-KR') + ' · ' + escapeHtml(r.memo) + '</span></div><div class="row-num">' + sign + money(r.amount) + '<button class="delete-btn" data-delete-meso="' + escapeHtml(r.id) + '" type="button">x</button></div></div>';
-        }).join('');
-        bindDynamicButtons();
-      }
-
-      function addLastHuntMeso() {
-        var last = huntRecords()[0];
-        if (!last || Number(last.meso || 0) <= 0) { showToast('불러올 최근 사냥 메소 기록이 없습니다.'); return; }
-        setMesoType('income');
-        el('mesoCategory').value = '사냥 수익';
-        el('mesoAmount').value = money(last.meso);
-        el('mesoMemo').value = last.map + ' ' + last.minutes + '분 기록 기준';
-        showToast('최근 사냥 메소를 입력칸에 불러왔습니다.');
-      }
-
-      function downloadMeso() {
-        var records = mesoRecords();
-        if (!records.length) { showToast('다운로드할 메소 장부가 없습니다.'); return; }
-        var balance = 0;
-        var rows = [['일시', '구분', '분류', '수익', '지출', '잔액', '메모']];
-        records.slice().reverse().forEach(function (r) {
-          var inc = r.type === 'income' ? Number(r.amount || 0) : 0;
-          var exp = r.type === 'expense' ? Number(r.amount || 0) : 0;
-          balance += inc - exp;
-          rows.push([new Date(r.date).toLocaleString('ko-KR'), r.type === 'income' ? '수익' : '지출', r.category, inc, exp, balance, r.memo]);
+      function saveNote() {
+        var map = el('mapName').value.trim();
+        var minutes = n(el('huntMinutes').value);
+        if (!map || minutes <= 0) { toast('사냥터와 사냥 시간을 입력해주세요.'); return; }
+        var record = calcNote({
+          id: makeId(),
+          date: new Date().toISOString(),
+          map: map,
+          level: n(el('characterLevel').value),
+          job: el('jobName').value.trim() || '-',
+          minutes: minutes,
+          exp: n(el('gainedExp').value),
+          meso: n(el('gainedMeso').value),
+          drop: n(el('dropRevenue').value),
+          cost: n(el('potionCost').value),
+          fatigue: n(el('fatigueScore').value),
+          comfort: n(el('comfortScore').value),
+          memo: el('huntMemo').value.trim() || '-'
         });
-        downloadBlob('mapleplanet_meso_book.csv', makeCsv(rows));
+        var list = notes();
+        list.unshift(record);
+        setArr(NOTE_KEY, list.slice(0, 500));
+        clearMemoForm();
+        renderAll();
+        toast('사냥 메모를 저장했습니다.');
+      }
+
+      function deleteNote(noteId) {
+        setArr(NOTE_KEY, notes().filter(function (r) { return r.id !== noteId; }));
+        renderAll();
+        toast('메모를 삭제했습니다.');
+      }
+
+      function reuseNote(noteId) {
+        var item = notes().filter(function (r) { return r.id === noteId; })[0];
+        if (!item) return;
+        el('mapName').value = item.map;
+        el('characterLevel').value = item.level || '';
+        el('jobName').value = item.job === '-' ? '' : item.job;
+        el('huntMinutes').value = item.minutes || '';
+        el('gainedExp').value = item.exp ? f(item.exp) : '';
+        el('gainedMeso').value = item.meso ? f(item.meso) : '';
+        el('dropRevenue').value = item.drop ? f(item.drop) : '';
+        el('potionCost').value = item.cost ? f(item.cost) : '';
+        el('fatigueScore').value = String(item.fatigue || 3);
+        el('comfortScore').value = String(item.comfort || 3);
+        el('huntMemo').value = item.memo === '-' ? '' : item.memo;
+        location.hash = '#memo';
+        toast('기록을 입력칸에 불러왔습니다.');
+      }
+
+      function groupByMap(list) {
+        var grouped = {};
+        list.forEach(function (r) {
+          var key = r.map.trim();
+          if (!grouped[key]) grouped[key] = { map: key, count: 0, minutes: 0, expHour: 0, netHour: 0, mesoHour: 0, fatigue: 0, comfort: 0, net: 0 };
+          grouped[key].count += 1;
+          grouped[key].minutes += Number(r.minutes || 0);
+          grouped[key].expHour += Number(r.expHour || 0);
+          grouped[key].netHour += Number(r.netHour || 0);
+          grouped[key].mesoHour += Number(r.mesoHour || 0);
+          grouped[key].fatigue += Number(r.fatigue || 0);
+          grouped[key].comfort += Number(r.comfort || 0);
+          grouped[key].net += Number(r.net || 0);
+        });
+        return Object.keys(grouped).map(function (key) {
+          var g = grouped[key];
+          g.expHour = Math.round(g.expHour / g.count);
+          g.netHour = Math.round(g.netHour / g.count);
+          g.mesoHour = Math.round(g.mesoHour / g.count);
+          g.fatigue = Number((g.fatigue / g.count).toFixed(1));
+          g.comfort = Number((g.comfort / g.count).toFixed(1));
+          return g;
+        });
+      }
+
+      function renderQuickMaps() {
+        el('quickMapWrap').innerHTML = quickMaps.map(function (m) { return '<button class="quick-map" type="button" data-map="' + esc(m) + '">' + esc(m) + '</button>'; }).join('');
+        Array.prototype.forEach.call(document.querySelectorAll('[data-map]'), function (btn) {
+          btn.onclick = function () { el('mapName').value = btn.getAttribute('data-map'); };
+        });
+      }
+
+      function renderSummary() {
+        var list = notes();
+        var totalMinutes = list.reduce(function (s, r) { return s + Number(r.minutes || 0); }, 0);
+        var bestExp = list.slice().sort(function (a, b) { return Number(b.expHour || 0) - Number(a.expHour || 0); })[0];
+        var bestNet = list.slice().sort(function (a, b) { return Number(b.netHour || 0) - Number(a.netHour || 0); })[0];
+        el('totalNotesText').textContent = f(list.length);
+        el('totalTimeText').textContent = f(totalMinutes) + '분';
+        el('bestExpText').textContent = bestExp ? bestExp.map + ' · ' + f(bestExp.expHour) : '-';
+        el('bestNetText').textContent = bestNet ? bestNet.map + ' · ' + f(bestNet.netHour) : '-';
+      }
+
+      function renderRanking() {
+        var sort = el('rankSort').value;
+        var ranks = groupByMap(notes());
+        if (sort === 'expHour') ranks.sort(function (a, b) { return b.expHour - a.expHour; });
+        else if (sort === 'comfort') ranks.sort(function (a, b) { return b.comfort - a.comfort; });
+        else if (sort === 'fatigue') ranks.sort(function (a, b) { return a.fatigue - b.fatigue; });
+        else if (sort === 'count') ranks.sort(function (a, b) { return b.count - a.count; });
+        else ranks.sort(function (a, b) { return b.netHour - a.netHour; });
+
+        if (!ranks.length) { el('rankList').innerHTML = '<div class="empty">사냥 메모를 저장하면 내 랭킹이 자동으로 만들어집니다.</div>'; return; }
+        el('rankList').innerHTML = ranks.map(function (r, idx) {
+          var mainValue = sort === 'expHour' ? f(r.expHour) + ' EXP/h' : sort === 'comfort' ? r.comfort + ' / 5' : sort === 'fatigue' ? r.fatigue + ' / 5' : sort === 'count' ? f(r.count) + '회' : f(r.netHour) + ' 순수익/h';
+          return '<div class="rank-row"><div class="rank-number">' + (idx + 1) + '</div><div class="row-main"><strong>' + esc(r.map) + '</strong><span>기록 ' + r.count + '회 · 총 ' + f(r.minutes) + '분 · 평균 EXP/h ' + f(r.expHour) + ' · 평균 순수익/h ' + f(r.netHour) + ' · 피로도 ' + r.fatigue + ' · 편의성 ' + r.comfort + '</span></div><div class="row-num">' + mainValue + '</div></div>';
+        }).join('');
+      }
+
+      function renderNotes() {
+        var list = notes();
+        if (!list.length) { el('noteList').innerHTML = '<div class="empty">아직 저장된 메모가 없습니다.</div>'; return; }
+        el('noteList').innerHTML = list.slice(0, 30).map(function (r) {
+          return '<div class="note-row"><span class="pill blue">Lv.' + (r.level || '-') + '</span><div class="row-main"><strong>' + esc(r.map) + '</strong><span>' + new Date(r.date).toLocaleString('ko-KR') + ' · ' + esc(r.job) + ' · ' + r.minutes + '분<br>EXP/h ' + f(r.expHour) + ' · 메소/h ' + f(r.mesoHour) + ' · 순수익/h ' + f(r.netHour) + ' · 피로도 ' + r.fatigue + ' · 편의성 ' + r.comfort + '<br>' + esc(r.memo) + '</span></div><div class="row-num">순수익 ' + f(r.net) + '<button class="copy-btn" type="button" data-reuse-note="' + esc(r.id) + '">재입력</button><button class="delete-btn" type="button" data-delete-note="' + esc(r.id) + '">삭제</button></div></div>';
+        }).join('');
+        bindDynamicButtons();
+      }
+
+      function expRequired(fromLevel, currentPercent, targetLevel) {
+        var from = Math.max(1, Math.min(199, Math.floor(fromLevel)));
+        var target = Math.max(from + 1, Math.min(200, Math.floor(targetLevel)));
+        var percent = Math.max(0, Math.min(99.99, Number(currentPercent || 0))) / 100;
+        var total = Math.round(EXP_TABLE[from - 1] * (1 - percent));
+        for (var level = from + 1; level < target; level += 1) total += EXP_TABLE[level - 1];
+        return total;
+      }
+
+      function calcLevel() {
+        var required = expRequired(n(el('currentLevel').value), n(el('currentPercent').value), n(el('targetLevel').value));
+        var eph = n(el('expPerHour').value);
+        var hours = eph > 0 ? required / eph : 0;
+        el('needExpText').textContent = f(required);
+        el('needTimeText').textContent = eph > 0 ? (hours >= 1 ? hours.toFixed(1) + '시간' : Math.ceil(hours * 60) + '분') : 'EXP/h 입력';
+        el('needRunsText').textContent = eph > 0 ? Math.ceil(hours * 2) + '회' : '-';
+      }
+
+      function useBestExp() {
+        var best = notes().slice().sort(function (a, b) { return Number(b.expHour || 0) - Number(a.expHour || 0); })[0];
+        if (!best) { toast('불러올 사냥 기록이 없습니다.'); return; }
+        el('expPerHour').value = f(best.expHour);
+        toast('최고 EXP/h를 불러왔습니다.');
+        calcLevel();
+      }
+
+      function combination(nValue, rValue) {
+        if (rValue < 0 || rValue > nValue) return 0;
+        var result = 1;
+        for (var i = 1; i <= rValue; i += 1) result = result * (nValue - rValue + i) / i;
+        return result;
+      }
+
+      function binomialAtLeast(trials, chance, goal) {
+        var p = chance / 100;
+        var total = 0;
+        for (var k = goal; k <= trials; k += 1) total += combination(trials, k) * Math.pow(p, k) * Math.pow(1 - p, trials - k);
+        return total;
+      }
+
+      function calcScroll() {
+        var chance = Math.max(0, Math.min(100, n(el('scrollChance').value)));
+        var slots = Math.max(0, Math.floor(n(el('scrollSlots').value)));
+        var goal = Math.max(0, Math.floor(n(el('scrollGoal').value)));
+        var price = n(el('scrollPrice').value);
+        el('scrollExpectedText').textContent = (slots * chance / 100).toFixed(2) + '회';
+        el('scrollGoalText').textContent = (binomialAtLeast(slots, chance, goal) * 100).toFixed(2) + '%';
+        el('scrollCostText').textContent = price ? f(price * slots) : '가격 미입력';
+      }
+
+      function calcCube() {
+        var chance = Math.max(0.0001, Math.min(100, n(el('cubeChance').value)));
+        var price = n(el('cubePrice').value);
+        var target = Math.max(0.01, Math.min(99.99, n(el('cubeTarget').value))) / 100;
+        var expected = 1 / (chance / 100);
+        var needed = Math.ceil(Math.log(1 - target) / Math.log(1 - chance / 100));
+        el('cubeExpectedText').textContent = expected.toFixed(1) + '개';
+        el('cubeTargetText').textContent = f(needed) + '개';
+        el('cubeCostText').textContent = price ? f(price * needed) : '가격 미입력';
+      }
+
+      function setMoneyType(type) {
+        moneyType = type === 'expense' ? 'expense' : 'income';
+        el('incomeTab').classList.toggle('active', moneyType === 'income');
+        el('expenseTab').classList.toggle('active', moneyType === 'expense');
+      }
+
+      function saveMoney() {
+        var category = el('moneyCategory').value.trim() || (moneyType === 'income' ? '수익' : '지출');
+        var amount = n(el('moneyAmount').value);
+        var memo = el('moneyMemo').value.trim() || '-';
+        if (amount <= 0) { toast('금액을 입력해주세요.'); return; }
+        var rows = moneyRows();
+        rows.unshift({ id: makeId(), date: new Date().toISOString(), type: moneyType, category: category, amount: amount, memo: memo });
+        setArr(MONEY_KEY, rows.slice(0, 500));
+        el('moneyAmount').value = ''; el('moneyMemo').value = '';
+        renderMoney();
+        toast('메소 장부를 저장했습니다.');
+      }
+
+      function useLastNet() {
+        var last = notes()[0];
+        if (!last) { toast('불러올 최근 사냥 메모가 없습니다.'); return; }
+        setMoneyType(last.net >= 0 ? 'income' : 'expense');
+        el('moneyCategory').value = '사냥 순수익';
+        el('moneyAmount').value = f(Math.abs(last.net));
+        el('moneyMemo').value = last.map + ' ' + last.minutes + '분 기록 기준';
+        toast('최근 사냥 순수익을 불러왔습니다.');
+      }
+
+      function deleteMoney(rowId) {
+        setArr(MONEY_KEY, moneyRows().filter(function (r) { return r.id !== rowId; }));
+        renderMoney();
+        toast('장부 내역을 삭제했습니다.');
+      }
+
+      function renderMoney() {
+        var rows = moneyRows();
+        var income = rows.filter(function (r) { return r.type === 'income'; }).reduce(function (s, r) { return s + Number(r.amount || 0); }, 0);
+        var expense = rows.filter(function (r) { return r.type === 'expense'; }).reduce(function (s, r) { return s + Number(r.amount || 0); }, 0);
+        el('moneyBalanceText').textContent = f(income - expense);
+        el('moneyIncomeText').textContent = f(income);
+        el('moneyExpenseText').textContent = f(expense);
+        if (!rows.length) { el('moneyList').innerHTML = '<div class="empty">아직 메소 장부 내역이 없습니다.</div>'; return; }
+        el('moneyList').innerHTML = rows.slice(0, 40).map(function (r) {
+          var isIncome = r.type === 'income';
+          return '<div class="money-row"><span class="pill ' + (isIncome ? 'green' : 'red') + '">' + (isIncome ? '수익' : '지출') + '</span><div class="row-main"><strong>' + esc(r.category) + '</strong><span>' + new Date(r.date).toLocaleString('ko-KR') + ' · ' + esc(r.memo) + '</span></div><div class="row-num">' + (isIncome ? '+' : '-') + f(r.amount) + '<button class="delete-btn" type="button" data-delete-money="' + esc(r.id) + '">삭제</button></div></div>';
+        }).join('');
+        bindDynamicButtons();
+      }
+
+      function saveMarket() {
+        var item = el('marketItem').value.trim();
+        var price = n(el('marketPrice').value);
+        if (!item || price <= 0) { toast('아이템과 시세를 입력해주세요.'); return; }
+        var rows = marketRows();
+        rows.unshift({ id: makeId(), date: new Date().toISOString(), item: item, price: price, memo: el('marketMemo').value.trim() || '-' });
+        setArr(MARKET_KEY, rows.slice(0, 300));
+        el('marketItem').value = ''; el('marketPrice').value = ''; el('marketMemo').value = '';
+        renderMarket();
+        toast('시세 메모를 저장했습니다.');
+      }
+
+      function deleteMarket(rowId) {
+        setArr(MARKET_KEY, marketRows().filter(function (r) { return r.id !== rowId; }));
+        renderMarket();
+      }
+
+      function renderMarket() {
+        var rows = marketRows();
+        if (!rows.length) { el('marketList').innerHTML = '<div class="empty">아직 시세 메모가 없습니다.</div>'; return; }
+        el('marketList').innerHTML = rows.slice(0, 12).map(function (r) {
+          return '<div class="market-row"><span class="pill amber">시세</span><div class="row-main"><strong>' + esc(r.item) + '</strong><span>' + new Date(r.date).toLocaleString('ko-KR') + ' · ' + esc(r.memo) + '</span></div><div class="row-num">' + f(r.price) + '<button class="delete-btn" data-delete-market="' + esc(r.id) + '" type="button">삭제</button></div></div>';
+        }).join('');
+        bindDynamicButtons();
+      }
+
+      function saveDrop() {
+        var map = el('dropMap').value.trim();
+        var item = el('dropItem').value.trim();
+        var count = n(el('dropCount').value);
+        var minutes = n(el('dropMinutes').value);
+        if (!map || !item || count <= 0) { toast('맵/몬스터, 아이템, 수량을 입력해주세요.'); return; }
+        var rows = dropRows();
+        rows.unshift({ id: makeId(), date: new Date().toISOString(), map: map, item: item, count: count, minutes: minutes });
+        setArr(DROP_KEY, rows.slice(0, 300));
+        el('dropMap').value = ''; el('dropItem').value = ''; el('dropCount').value = ''; el('dropMinutes').value = '';
+        renderDrop();
+        toast('드랍 메모를 저장했습니다.');
+      }
+
+      function deleteDrop(rowId) {
+        setArr(DROP_KEY, dropRows().filter(function (r) { return r.id !== rowId; }));
+        renderDrop();
+      }
+
+      function renderDrop() {
+        var rows = dropRows();
+        if (!rows.length) { el('dropList').innerHTML = '<div class="empty">아직 드랍 메모가 없습니다.</div>'; return; }
+        el('dropList').innerHTML = rows.slice(0, 12).map(function (r) {
+          var hourly = r.minutes > 0 ? ' · 시간당 ' + f(r.count / r.minutes * 60) + '개' : '';
+          return '<div class="drop-row"><span class="pill green">드랍</span><div class="row-main"><strong>' + esc(r.item) + '</strong><span>' + esc(r.map) + ' · ' + f(r.count) + '개' + hourly + '<br>' + new Date(r.date).toLocaleString('ko-KR') + '</span></div><div class="row-num"><button class="delete-btn" data-delete-drop="' + esc(r.id) + '" type="button">삭제</button></div></div>';
+        }).join('');
+        bindDynamicButtons();
       }
 
       function renderShare() {
-        var last = huntRecords()[0];
+        var last = notes()[0];
         if (!last) {
-          el('shareCard').innerHTML = '<div><div class="muted">최근 기록 없음</div><h3>사냥 기록을 저장하면 공유 카드가 생성됩니다.</h3></div><div class="muted">메이플플래닛 데이터랩</div>';
+          el('shareCard').innerHTML = '<div><div class="muted">최근 메모 없음</div><h3>사냥 메모를 저장하면 공유 카드가 생성됩니다.</h3></div><div class="muted">메이플플래닛 데이터랩</div>';
           return;
         }
-        el('shareCard').innerHTML = '<div><div class="muted">최근 사냥 실험</div><h3>' + escapeHtml(last.map) + '</h3></div><div class="share-grid"><div class="share-box"><div class="name">사냥 시간</div><div class="value">' + last.minutes + '분</div></div><div class="share-box"><div class="name">EXP/h</div><div class="value">' + money(last.expHour) + '</div></div><div class="share-box"><div class="name">MESO/h</div><div class="value">' + money(last.mesoHour) + '</div></div><div class="share-box"><div class="name">피로도</div><div class="value">' + last.fatigue + '/5</div></div></div><div class="muted">메이플플래닛 데이터랩</div>';
+        el('shareCard').innerHTML = '<div><div class="muted">최근 사냥 메모</div><h3>' + esc(last.map) + '</h3></div><div class="share-grid"><div class="share-box"><div class="name">시간</div><div class="value">' + last.minutes + '분</div></div><div class="share-box"><div class="name">EXP/h</div><div class="value">' + f(last.expHour) + '</div></div><div class="share-box"><div class="name">순수익/h</div><div class="value">' + f(last.netHour) + '</div></div><div class="share-box"><div class="name">편의성</div><div class="value">' + last.comfort + '/5</div></div></div><div class="muted">메이플플래닛 데이터랩</div>';
       }
 
       function shareText() {
-        var last = huntRecords()[0];
+        var last = notes()[0];
         if (!last) return '';
-        return ['[메이플플래닛 사냥 실험]', '사냥터: ' + last.map, '시간: ' + last.minutes + '분', '획득 경험치: ' + money(last.exp), '획득 메소: ' + money(last.meso), '시간당 경험치: ' + money(last.expHour), '시간당 메소: ' + money(last.mesoHour), '피로도: ' + last.fatigue + '/5', '메모: ' + last.memo].join(NEWLINE);
+        return ['[메이플플래닛 사냥 메모]', '사냥터: ' + last.map, '레벨/직업: Lv.' + (last.level || '-') + ' / ' + last.job, '시간: ' + last.minutes + '분', '획득 경험치: ' + f(last.exp), '획득 메소: ' + f(last.meso), '드랍/판매 수익: ' + f(last.drop), '비용: ' + f(last.cost), '순수익: ' + f(last.net), '시간당 경험치: ' + f(last.expHour), '시간당 순수익: ' + f(last.netHour), '피로도: ' + last.fatigue + '/5', '편의성: ' + last.comfort + '/5', '메모: ' + last.memo].join(NEWLINE);
       }
 
       function copyShare() {
         var text = shareText();
-        if (!text) { showToast('복사할 사냥 기록이 없습니다.'); return; }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () { showToast('공유 문구를 복사했습니다.'); }).catch(function () { showToast('복사에 실패했습니다.'); });
-        } else {
-          showToast('이 브라우저에서는 복사를 지원하지 않습니다.');
-        }
+        if (!text) { toast('복사할 메모가 없습니다.'); return; }
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('공유 문구를 복사했습니다.'); }).catch(function () { toast('복사에 실패했습니다.'); });
+        else toast('이 브라우저에서는 복사를 지원하지 않습니다.');
+      }
+
+      function exportNotes() {
+        var rows = [['일시', '사냥터', '레벨', '직업', '시간분', '경험치', '획득메소', '드랍판매수익', '비용', '순수익', 'EXP/h', '메소/h', '순수익/h', '피로도', '편의성', '메모']];
+        notes().slice().reverse().forEach(function (r) { rows.push([new Date(r.date).toLocaleString('ko-KR'), r.map, r.level, r.job, r.minutes, r.exp, r.meso, r.drop, r.cost, r.net, r.expHour, r.mesoHour, r.netHour, r.fatigue, r.comfort, r.memo]); });
+        download('mapleplanet_personal_notes.csv', makeCsv(rows));
+      }
+
+      function exportMoney() {
+        var rows = [['일시', '구분', '분류', '수익', '지출', '메모']];
+        moneyRows().slice().reverse().forEach(function (r) { rows.push([new Date(r.date).toLocaleString('ko-KR'), r.type === 'income' ? '수익' : '지출', r.category, r.type === 'income' ? r.amount : 0, r.type === 'expense' ? r.amount : 0, r.memo]); });
+        download('mapleplanet_money_book.csv', makeCsv(rows));
+      }
+
+      function formatInputs() {
+        ['gainedExp', 'gainedMeso', 'dropRevenue', 'potionCost', 'moneyAmount', 'marketPrice', 'scrollPrice', 'cubePrice', 'expPerHour'].forEach(function (field) {
+          el(field).addEventListener('blur', function () { var value = n(el(field).value); if (el(field).value.trim() !== '') el(field).value = f(value); });
+          el(field).addEventListener('focus', function () { el(field).value = String(el(field).value).replace(/,/g, ''); });
+        });
       }
 
       function bindDynamicButtons() {
-        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-hunt]'), function (btn) { btn.onclick = function () { deleteHunt(btn.getAttribute('data-delete-hunt')); }; });
-        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-meso]'), function (btn) { btn.onclick = function () { deleteMeso(btn.getAttribute('data-delete-meso')); }; });
+        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-note]'), function (btn) { btn.onclick = function () { deleteNote(btn.getAttribute('data-delete-note')); }; });
+        Array.prototype.forEach.call(document.querySelectorAll('[data-reuse-note]'), function (btn) { btn.onclick = function () { reuseNote(btn.getAttribute('data-reuse-note')); }; });
+        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-money]'), function (btn) { btn.onclick = function () { deleteMoney(btn.getAttribute('data-delete-money')); }; });
+        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-market]'), function (btn) { btn.onclick = function () { deleteMarket(btn.getAttribute('data-delete-market')); }; });
+        Array.prototype.forEach.call(document.querySelectorAll('[data-delete-drop]'), function (btn) { btn.onclick = function () { deleteDrop(btn.getAttribute('data-delete-drop')); }; });
       }
 
+      function renderAll() { renderSummary(); renderRanking(); renderNotes(); renderMoney(); renderMarket(); renderDrop(); renderShare(); }
+
       function bindEvents() {
-        ['levelFilter', 'purposeFilter', 'sortFilter', 'keywordFilter'].forEach(function (id) { el(id).addEventListener('input', renderMaps); el(id).addEventListener('change', renderMaps); });
-        el('saveHuntBtn').addEventListener('click', saveHunt);
-        el('clearHuntBtn').addEventListener('click', function () { if (confirm('사냥 실험 기록을 모두 삭제할까요?')) { setArray(HUNT_KEY, []); renderHunts(); renderShare(); showToast('사냥 실험 기록을 삭제했습니다.'); } });
-        el('incomeTab').addEventListener('click', function () { setMesoType('income'); });
-        el('expenseTab').addEventListener('click', function () { setMesoType('expense'); });
-        el('addMesoBtn').addEventListener('click', addMeso);
-        el('addLastHuntMesoBtn').addEventListener('click', addLastHuntMeso);
-        el('downloadMesoBtn').addEventListener('click', downloadMeso);
-        el('clearMesoBtn').addEventListener('click', function () { if (confirm('메소 장부를 모두 삭제할까요?')) { setArray(MESO_KEY, []); renderMeso(); showToast('메소 장부를 삭제했습니다.'); } });
+        el('saveNoteBtn').addEventListener('click', saveNote);
+        el('resetFormBtn').addEventListener('click', clearMemoForm);
+        el('rankSort').addEventListener('change', renderRanking);
+        el('exportNotesBtn').addEventListener('click', exportNotes);
+        el('clearNotesBtn').addEventListener('click', function () { if (confirm('모든 사냥 메모를 삭제할까요?')) { setArr(NOTE_KEY, []); renderAll(); toast('사냥 메모를 삭제했습니다.'); } });
+        el('calcLevelBtn').addEventListener('click', calcLevel);
+        el('useBestExpBtn').addEventListener('click', useBestExp);
+        el('calcScrollBtn').addEventListener('click', calcScroll);
+        el('cubePreset').addEventListener('change', function () { if (el('cubePreset').value !== 'custom') el('cubeChance').value = el('cubePreset').value; });
+        el('calcCubeBtn').addEventListener('click', calcCube);
+        el('incomeTab').addEventListener('click', function () { setMoneyType('income'); });
+        el('expenseTab').addEventListener('click', function () { setMoneyType('expense'); });
+        el('saveMoneyBtn').addEventListener('click', saveMoney);
+        el('useLastNetBtn').addEventListener('click', useLastNet);
+        el('exportMoneyBtn').addEventListener('click', exportMoney);
+        el('clearMoneyBtn').addEventListener('click', function () { if (confirm('메소 장부를 삭제할까요?')) { setArr(MONEY_KEY, []); renderMoney(); toast('메소 장부를 삭제했습니다.'); } });
+        el('saveMarketBtn').addEventListener('click', saveMarket);
+        el('saveDropBtn').addEventListener('click', saveDrop);
         el('copyShareBtn').addEventListener('click', copyShare);
-        ['huntExp', 'huntMeso', 'mesoAmount'].forEach(function (id) { el(id).addEventListener('blur', function () { var v = onlyNumber(el(id).value); if (el(id).value.trim() !== '') el(id).value = money(v); }); el(id).addEventListener('focus', function () { el(id).value = String(el(id).value).replace(/,/g, ''); }); });
+        formatInputs();
       }
 
       function runTests() {
         var failures = [];
-        function test(name, condition) { if (!condition) failures.push(name); }
-        test('MAPS contains MaplePlanet community candidates', MAPS.length >= 30);
-        test('No classic-only placeholder map', MAPS.map(function (m) { return m.name; }).join(' ').indexOf('하늘계단') === -1);
-        test('Meso labels are income expense', el('incomeTab').textContent === '수익' && el('expenseTab').textContent === '지출');
-        test('onlyNumber removes comma', onlyNumber('1,000') === 1000);
-        test('matchLevelScore exact range', matchLevelScore({ min: 10, max: 20 }, 15) === 100);
-        test('csv creates quoted cell', csvCell('a"b') === '"a""b"');
-        test('At least five maps have numeric exp or meso data', MAPS.filter(function (m) { return metricMax(m, 'exp') > 0 || metricMax(m, 'meso') > 0; }).length >= 5);
-        if (failures.length) console.error('DataLab tests failed:', failures); else console.info('DataLab tests passed.');
+        function test(name, ok) { if (!ok) failures.push(name); }
+        test('calcNote computes net', calcNote({ minutes: 60, exp: 100, meso: 1000, drop: 500, cost: 200 }).net === 1300);
+        test('calcNote computes exp per hour', calcNote({ minutes: 30, exp: 1000, meso: 0, drop: 0, cost: 0 }).expHour === 2000);
+        test('number parser removes comma', n('1,234') === 1234);
+        test('level 60 to 70 old exp sum', expRequired(60, 0, 70) === 15564498);
+        test('scroll probability is valid', binomialAtLeast(7, 60, 4) > 0.7);
+        test('money labels are income expense', el('incomeTab').textContent === '수익' && el('expenseTab').textContent === '지출');
+        if (failures.length) console.error('DataLab self-tests failed:', failures); else console.info('DataLab self-tests passed.');
       }
 
-      function init() { bindEvents(); renderMaps(); renderHunts(); renderMeso(); renderShare(); runTests(); }
+      function init() { renderQuickMaps(); bindEvents(); renderAll(); calcLevel(); calcScroll(); calcCube(); runTests(); }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
     })();
   </script>
